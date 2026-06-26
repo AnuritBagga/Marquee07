@@ -108,14 +108,37 @@ export default function usePracticeInterview({
 
   const startTimer = useCallback(() => {
     if (timerRef.current) return;
+    console.log("🕐 Timer started");
+    
+    // Use a more reliable timing mechanism
+    const startTime = Date.now();
     timerRef.current = setInterval(() => {
-      setTimerSeconds((s) => { const n = s + 1; timerSecondsRef.current = n; return n; });
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      console.log("⏱️ Timer tick:", elapsed);
+      timerSecondsRef.current = elapsed;
+      setTimerSeconds(elapsed);
     }, 1000);
+    
+    console.log("⏰ Timer interval created, ID:", timerRef.current);
   }, []);
 
   const stopTimer = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = null;
+    console.log("🛑 Timer stopped, ID:", timerRef.current);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  // Ensure timer cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        console.log("🧹 Cleanup: clearing timer on unmount");
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
   }, []);
 
   const getVoices = () =>
@@ -359,6 +382,14 @@ export default function usePracticeInterview({
   }, [runTurn, transcribe, stopRecording, speak, stopTimer, evaluate]);
 
   const start = useCallback(() => {
+    console.log("🚀 Interview START called");
+    
+    // Clear any existing timer first
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    
     setHistory([]);
     setPhase("idle");
     setError(null);
@@ -375,7 +406,9 @@ export default function usePracticeInterview({
     submittingRef.current = false;
     recordingPromiseRef.current = null;
     usedDsaTitlesRef.current = [];  // Reset used DSA problems
+    
     startTimer();
+    console.log("⏰ Timer interval started, ID:", timerRef.current);
     runTurn([]);
   }, [runTurn, startTimer]);
 
@@ -394,12 +427,15 @@ export default function usePracticeInterview({
     return () => {
       window.speechSynthesis?.cancel();
       stopAmp();
-      stopTimer();
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
       const rec = recorderRef.current;
       if (rec && rec.state === "recording") rec.stop();
       streamRef.current?.getTracks().forEach((t) => t.stop());
     };
-  }, [stopAmp, stopTimer]);
+  }, [stopAmp]); // Removed stopTimer from dependencies
 
   return {
     phase, history, currentQuestion, dsaProblem, sqlProblem,

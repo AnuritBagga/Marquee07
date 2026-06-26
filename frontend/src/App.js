@@ -1,6 +1,7 @@
 import "@/App.css";
 import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
 import Landing from "@/pages/Landing";
 import Practice from "@/pages/Practice";
 import PracticeSession from "@/pages/PracticeSession";
@@ -9,6 +10,9 @@ import Companies from "@/pages/Companies";
 import CompanyRegister from "@/pages/CompanyRegister";
 import UniversityRegister from "@/pages/UniversityRegister";
 import Careers from "@/pages/Careers";
+import Login from "@/pages/Login";
+import Register from "@/pages/Register";
+import AuthCallback from "@/pages/AuthCallback";
 import IntroSequence from "@/components/brand/IntroSequence";
 
 function App() {
@@ -27,21 +31,26 @@ function App() {
   }, []);
 
   return (
-    <div className="App grain">
-      {intro && <IntroSequence onDone={() => setIntro(false)} />}
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/practice" element={<Practice />} />
-          <Route path="/practice/session" element={<PracticeSession />} />
-          <Route path="/campuses" element={<Campuses />} />
-          <Route path="/companies" element={<Companies />} />
-          <Route path="/company-register" element={<CompanyRegister />} />
-          <Route path="/university-register" element={<UniversityRegister />} />
-          <Route path="/careers" element={<Careers />} />
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <AuthProvider>
+      <div className="App grain">
+        {intro && <IntroSequence onDone={() => setIntro(false)} />}
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/practice" element={<Practice />} />
+            <Route path="/practice/session" element={<PracticeSession />} />
+            <Route path="/campuses" element={<Campuses />} />
+            <Route path="/companies" element={<Companies />} />
+            <Route path="/company-register" element={<CompanyRegister />} />
+            <Route path="/university-register" element={<UniversityRegister />} />
+            <Route path="/careers" element={<Careers />} />
+          </Routes>
+        </BrowserRouter>
+      </div>
+    </AuthProvider>
   );
 }
 

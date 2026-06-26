@@ -5,13 +5,34 @@ import { useState } from "react";
 export const CTAFooter = () => {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     if (!email.includes("@")) return;
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 4000);
-    setEmail("");
+    
+    setSending(true);
+    
+    try {
+      // Send to backend API
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000'}/api/signup/request-access`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+        setTimeout(() => setSubmitted(false), 4000);
+        setEmail("");
+      }
+    } catch (error) {
+      console.error("Email submission failed:", error);
+    } finally {
+      setSending(false);
+    }
   };
 
   return (

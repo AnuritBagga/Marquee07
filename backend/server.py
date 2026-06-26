@@ -14,6 +14,9 @@ from datetime import datetime, timezone
 from groq import Groq
 import google.generativeai as genai
 from problem_bank import get_random_dsa_problem, get_random_sql_problem
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / ".env")
@@ -907,3 +910,161 @@ app.include_router(api_router)
 async def shutdown_db_client():
     client_db.close()
 
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# EMAIL SIGNUP (Access Request)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class EmailSignupRequest(BaseModel):
+    email: str
+
+@api_router.post("/signup/request-access")
+async def request_access(payload: EmailSignupRequest):
+    """
+    Handle email signup requests - sends notification to admin and welcome email to user
+    Uses Gmail SMTP (free)
+    """
+    user_email = payload.email.strip().lower()
+    
+    if not user_email or "@" not in user_email:
+        raise HTTPException(status_code=400, detail="Invalid email address")
+    
+    # Get email credentials from environment
+    smtp_email = os.environ.get("SMTP_EMAIL", "marqueesupport@gmail.com")
+    smtp_password = os.environ.get("SMTP_PASSWORD", "")
+    
+    if not smtp_password:
+        # If no SMTP configured, just store the email and return success
+        logger.warning("SMTP not configured, email signup recorded but not sent")
+        await db.email_signups.insert_one({
+            "email": user_email,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "status": "pending"
+        })
+        return {"success": True, "message": "Request received"}
+    
+    try:
+        # Store signup in database
+        await db.email_signups.insert_one({
+            "email": user_email,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "status": "sent"
+        })
+        
+        # Send notification email to admin
+        admin_msg = MIMEMultipart("alternative")
+        admin_msg["Subject"] = "🎉 New Marquee Access Request"
+        admin_msg["From"] = smtp_email
+        admin_msg["To"] = smtp_email
+        
+        admin_html = f"""
+        <html>
+            <body style="font-family: Arial, sans-serif; padding: 20px; background-color: #f5f5f5;">
+                <div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <h2 style="color: #D4AF37; margin-bottom: 20px;">New Premium Member Signup</h2>
+                    <p style="font-size: 16px; color: #333; line-height: 1.6;">
+                        A new user has requested access to Marquee:
+                    </p>
+                    <div style="background-color: #f9f9f9; padding: 15px; border-left: 4px solid #D4AF37; margin: 20px 0;">
+                        <strong>Email:</strong> {user_email}
+                    </div>
+                    <p style="font-size: 14px; color: #666; margin-top: 20px;">
+                        Timestamp: {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")}
+                    </p>
+                </div>
+            </body>
+        </html>
+        """
+        
+        admin_msg.attach(MIMEText(admin_html, "html"))
+        
+        # Send welcome email to user
+        user_msg = MIMEMultipart("alternative")
+        user_msg["Subject"] = "Welcome to Marquee - Premium Member Access ✨"
+        user_msg["From"] = f"Marquee <{smtp_email}>"
+        user_msg["To"] = user_email
+        
+        user_html = f"""
+        <html>
+            <body style="font-family: Arial, sans-serif; padding: 20px; background-color: #f5f5f5;">
+                <div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="color: #D4AF37; font-family: 'Georgia', serif; font-size: 36px; margin-bottom: 10px;">Marquee</h1>
+                        <p style="color: #666; font-size: 14px; letter-spacing: 2px; text-transform: uppercase;">AI Interview Platform</p>
+                    </div>
+                    
+                    <h2 style="color: #333; margin-bottom: 20px;">🎉 Welcome to Marquee Premium!</h2>
+                    
+                    <p style="font-size: 16px; color: #333; line-height: 1.8; margin-bottom: 20px;">
+                        Thank you for your interest in Marquee! We're excited to have you join our community.
+                    </p>
+                    
+                    <div style="background: linear-gradient(135deg, #f9f5e8 0%, #ffffff 100%); padding: 25px; border-radius: 8px; border-left: 4px solid #D4AF37; margin: 30px 0;">
+                        <h3 style="color: #D4AF37; margin-top: 0; margin-bottom: 15px; font-size: 18px;">🌟 You're Now a Premium Member!</h3>
+                        <p style="font-size: 15px; color: #555; line-height: 1.8; margin-bottom: 10px;">
+                            As a premium member, you'll receive exclusive updates about:
+                        </p>
+                        <ul style="color: #555; font-size: 15px; line-height: 1.8; margin-left: 20px;">
+                            <li>✨ New AI interview features and improvements</li>
+                            <li>🚀 Early access to beta releases</li>
+                            <li>📚 Expert interview preparation tips</li>
+                            <li>💼 Exclusive company partnerships and opportunities</li>
+                            <li>🎯 Advanced practice tools and resources</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin: 30px 0;">
+                        <p style="font-size: 14px; color: #D4AF37; font-weight: bold; margin-bottom: 10px; text-align: center;">
+                            💎 This is a 100% FREE Premium Membership
+                        </p>
+                        <p style="font-size: 13px; color: #666; text-align: center; margin: 0;">
+                            No charges. No hidden fees. No credit card required. Ever.
+                        </p>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                        <p style="font-size: 14px; color: #666; margin-bottom: 15px;">
+                            Ready to start practicing?
+                        </p>
+                        <a href="http://localhost:3000/practice" style="display: inline-block; background-color: #D4AF37; color: black; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 14px; letter-spacing: 1px; text-transform: uppercase;">
+                            Start Practice
+                        </a>
+                    </div>
+                    
+                    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; text-align: center;">
+                        <p style="font-size: 13px; color: #999; margin-bottom: 10px;">
+                            Questions? We're here to help!
+                        </p>
+                        <p style="font-size: 13px; color: #D4AF37; margin: 0;">
+                            <a href="mailto:marqueesupport@gmail.com" style="color: #D4AF37; text-decoration: none;">marqueesupport@gmail.com</a>
+                        </p>
+                    </div>
+                    
+                    <div style="margin-top: 30px; text-align: center;">
+                        <p style="font-size: 12px; color: #999; margin: 0;">
+                            © 2026 Marquee · Made for the quietly ambitious
+                        </p>
+                    </div>
+                </div>
+            </body>
+        </html>
+        """
+        
+        user_msg.attach(MIMEText(user_html, "html"))
+        
+        # Send both emails via Gmail SMTP
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(smtp_email, smtp_password)
+            # Send to admin
+            server.send_message(admin_msg)
+            # Send to user
+            server.send_message(user_msg)
+        
+        logger.info(f"Access request emails sent successfully to {user_email}")
+        return {"success": True, "message": "Welcome email sent!"}
+        
+    except Exception as e:
+        logger.exception(f"Failed to send access request emails: {e}")
+        # Still return success to user even if email fails
+        return {"success": True, "message": "Request received"}

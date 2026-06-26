@@ -242,9 +242,29 @@ export default function Practice() {
           <button
             onClick={handleStart}
             disabled={!resumeFile}
-            className="bg-[#D4AF37] text-black text-xs sm:text-sm font-semibold tracking-widest uppercase px-8 sm:px-12 py-3 sm:py-4 hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-30 disabled:cursor-not-allowed w-full sm:w-auto whitespace-nowrap"
+            className="relative group bg-gradient-to-r from-[#D4AF37] via-[#F4D03F] to-[#D4AF37] text-black text-xs sm:text-sm font-bold tracking-[0.3em] uppercase px-10 sm:px-16 py-4 sm:py-5 hover:shadow-2xl hover:shadow-[#D4AF37]/50 active:scale-[0.97] transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed w-full sm:w-auto whitespace-nowrap overflow-hidden"
           >
-            Begin Interview →
+            {/* Animated shine effect */}
+            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
+            
+            {/* Glow effect */}
+            <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <span className="absolute inset-0 bg-[#D4AF37] blur-xl" />
+            </span>
+            
+            {/* Button text */}
+            <span className="relative z-10 flex items-center justify-center gap-2">
+              <span>Begin Interview</span>
+              <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </span>
+            
+            {/* Corner accents */}
+            <span className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-black/20" />
+            <span className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-black/20" />
+            <span className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-black/20" />
+            <span className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-black/20" />
           </button>
           {!resumeFile && (
             <p className="text-red-400/50 text-xs text-center">
