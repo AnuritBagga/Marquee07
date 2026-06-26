@@ -1,0 +1,156 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,400,300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --background: 0 0% 2%;
+    --foreground: 36 33% 98%;
+    --card: 0 0% 4%;
+    --card-foreground: 36 33% 98%;
+    --popover: 0 0% 4%;
+    --popover-foreground: 36 33% 98%;
+    --primary: 36 33% 98%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 7%;
+    --secondary-foreground: 36 33% 98%;
+    --muted: 0 0% 7%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 45 65% 52%;
+    --accent-foreground: 0 0% 4%;
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 36 33% 98%;
+    --border: 0 0% 12%;
+    --input: 0 0% 12%;
+    --ring: 45 65% 52%;
+    --radius: 0.125rem;
+}
+
+* {
+    @apply border-border;
+}
+
+html,
+body,
+#root {
+    background: #050505;
+    color: #FDFBF7;
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: 'Satoshi', system-ui, sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    background-color: #050505;
+}
+
+::selection {
+    background: #D4AF37;
+    color: #050505;
+}
+
+/* Cinematic grain overlay */
+.grain::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.85'/></svg>");
+}
+
+.font-serif {
+    font-family: 'Cormorant Garamond', serif;
+}
+.font-sans {
+    font-family: 'Satoshi', system-ui, sans-serif;
+}
+.font-mono {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Custom cursor accent for buttons */
+.btn-royal {
+    position: relative;
+    overflow: hidden;
+}
+.btn-royal::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 0%, rgba(212, 175, 55, 0.18) 50%, transparent 100%);
+    transform: translateX(-110%);
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.btn-royal:hover::after {
+    transform: translateX(110%);
+}
+
+/* Vertical marquee */
+@keyframes marquee-x {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+.animate-marquee {
+    animation: marquee-x 38s linear infinite;
+}
+
+/* Blink */
+@keyframes blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+}
+.cursor-blink {
+    animation: blink 1s steps(1) infinite;
+}
+
+/* Glow pulse for hero halo */
+@keyframes haloPulse {
+    0%, 100% { opacity: 0.35; transform: scale(1); }
+    50%      { opacity: 0.55; transform: scale(1.06); }
+}
+.halo-pulse {
+    animation: haloPulse 6s ease-in-out infinite;
+}
+
+/* Subtle scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #050505;
+}
+::-webkit-scrollbar-thumb {
+    background: #1a1a1a;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #2a2a2a;
+}
+
+/* Helper for hard sharp borders */
+.hairline {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.hairline-strong {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Audio bars */
+@keyframes bar {
+    0%, 100% { transform: scaleY(0.3); }
+    50%      { transform: scaleY(1); }
+}
+.audio-bar {
+    transform-origin: bottom;
+    animation: bar 1.1s ease-in-out infinite;
+}

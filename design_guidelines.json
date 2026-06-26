@@ -1,0 +1,102 @@
+{
+  "brand_identity": {
+    "name": "Marquee",
+    "tagline": "The New Standard of Interviewing",
+    "theme": "Dark Theme",
+    "archetype": "Archetype 5 (Luxury) mixed with Archetype 4 (Swiss/High-Contrast)",
+    "vibe": "Cult classic, royal, authoritative, cinematic, profound. It should feel like a high-end film production or an elite private institution, avoiding the generic 'purple-blue AI tech-bro' aesthetic."
+  },
+  "global_design_rules": {
+    "backgrounds": "Never use pure #000000. Use Deep Obsidian (#050505). Overlay sections with a subtle fixed grain/noise texture to create a cinematic 'film' feel.",
+    "surfaces": "Use glassmorphism sparingly and exclusively as 'Crystal Glass' (e.g., bg-black/40 with backdrop-blur-2xl and a crisp border-white/10). No muddy grey backgrounds.",
+    "borders": "Sharp, deliberate. Use 1px border-white/10. Avoid thick glowing neon borders. We want 'Old Money Tech' vibes.",
+    "border_radius": "Keep it sharp or extremely minimal (rounded-sm or rounded-none). Avoid pill shapes unless it's a very specific primary CTA.",
+    "spacing": "Extremely generous. Sections should have `py-24` or `py-32`. Elements inside grids must have `gap-12` or `gap-16` to let typography breathe.",
+    "motion_and_depth": "MANDATORY: Use `lenis` for smooth momentum scrolling. Use `framer-motion` for scroll-linked parallax (e.g., background elements moving slower than foreground elements). Implement layered 3D depth by absolutely positioning images behind content with `z-[-1]` and applying subtle `y` translations on scroll."
+  },
+  "typography": {
+    "strategy": "Old Money Tech. Classic Serif Headings + Sterile Modern Sans Body.",
+    "fonts": {
+      "heading": "Cormorant Garamond, serif",
+      "body": "Satoshi, sans-serif",
+      "code": "JetBrains Mono, monospace"
+    },
+    "css_imports": "@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');\n@import url('https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,300,400&display=swap');\n@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&display=swap');",
+    "scales": {
+      "h1": "text-5xl md:text-7xl lg:text-8xl font-light tracking-tighter leading-[0.9]",
+      "h2": "text-4xl md:text-5xl font-light tracking-tight leading-none",
+      "h3": "text-2xl md:text-3xl font-light tracking-tight",
+      "body": "text-base md:text-lg text-white/60 font-normal leading-relaxed tracking-wide",
+      "overline": "text-xs uppercase tracking-[0.3em] font-medium text-white/50"
+    }
+  },
+  "colors": {
+    "background": "#050505",
+    "surface_primary": "#0A0A0A",
+    "surface_secondary": "#121212",
+    "text_primary": "#FDFBF7",
+    "text_secondary": "#A1A1AA",
+    "text_muted": "#52525B",
+    "accent_royal": "#D4AF37",
+    "accent_royal_glow": "rgba(212, 175, 55, 0.15)",
+    "border_subtle": "rgba(255, 255, 255, 0.08)",
+    "border_highlight": "rgba(255, 255, 255, 0.2)"
+  },
+  "page_sections": [
+    {
+      "name": "Navigation",
+      "layout": "Fixed top, backdrop-blur-md, bg-black/50, border-b border-white/5. Minimalist logo on left, 3 links in center, 'Request Access' button on right.",
+      "interactions": "Links hover white. Button uses inverse fill (white bg, black text) on hover."
+    },
+    {
+      "name": "Hero Section",
+      "layout": "100vh height. True cinematic parallax. A massive `Cormorant Garamond` heading in the center. Behind it, a dark textured image layered with a vignette. As user scrolls down, the heading moves up faster than the background image (parallax effect).",
+      "content": "Overline: THE NEW STANDARD. Heading: 'The Interview, Reimagined.' Subtitle: 'Real-time AI cross-questioning. Built for the elite.'",
+      "visuals": "Use `background_texture_1` as an absolute inset-0 layer with opacity 30% and a heavy black gradient overlay."
+    },
+    {
+      "name": "How It Works (Live Demo Mockup)",
+      "layout": "Bento Grid (Control Room style). Left side: Sticky text explaining the process ('Listens in real-time. Cross-questions with intent.'). Right side: A mockup of the interview interface.",
+      "mockup_details": "Dark UI window. Top: 'Interviewer' transcript. Middle: 'Candidate' speaking. Bottom: A sleek code editor block showing DSA solution. Use glassmorphism and strict borders.",
+      "animations": "Fade in on scroll. The code editor can have a blinking cursor effect."
+    },
+    {
+      "name": "Three Modes Showcase",
+      "layout": "Asymmetric Bento 'Tetris' Grid. 3 distinct, massive cards overlapping slightly. \nCard 1 (Campuses): span-2, tall. \nCard 2 (Companies): span-2, wide.\nCard 3 (Self-Practice): span-2, square.",
+      "visuals": "Each card should feature a distinct, cinematic portrait from `media_urls` masked inside a sharp rectangle, overlaid with black/50. Typography sits elegantly over the image.",
+      "interactions": "Hovering a card desaturates the overlay (revealing the portrait) and scales the image inside by 1.05."
+    },
+    {
+      "name": "Interview Domains (Technical, Govt, Custom)",
+      "layout": "Horizontal marquee or a very spacious list layout. 'Editorial Ribbon' style. Huge typography outlining the domains: DSA / SYSTEM DESIGN / UPSC / NDA / MECHANICAL.",
+      "visuals": "Low contrast, slow scrolling text, breaking the standard blocky layout. A moment of purely typographic art."
+    },
+    {
+      "name": "Testimonials / Trusted By",
+      "layout": "Centered, high contrast. A single, powerful quote dominating the screen, not a generic carousel. 'Marquee doesn't just assess code. It assesses thought.'",
+      "visuals": "Logos of companies in a muted, low-opacity flex row below."
+    },
+    {
+      "name": "CTA & Footer",
+      "layout": "Massive py-40 section. Text: 'Ready to face Marquee?'. A royal accent button. Footer is minimal, multi-column, standard links.",
+      "visuals": "A glowing light effect from the bottom of the screen."
+    }
+  ],
+  "components_strategy": {
+    "buttons": "Flat, sharp edges (rounded-none). Default: border border-white/20 text-white hover:bg-white hover:text-black transition-colors duration-300. Primary CTA: bg-white text-black hover:bg-gray-200.",
+    "cards": "Cardless aesthetic preferred. If bounded, use 1px border-white/10, bg-transparent, no shadow. Padding inside must be massive (p-8 or p-12).",
+    "badges": "Border border-white/10, text-xs, uppercase, px-3 py-1."
+  },
+  "media_urls": {
+    "background_texture_1": "https://images.unsplash.com/photo-1528459061998-56fd57ad86e3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzN8MHwxfHNlYXJjaHwyfHxhYnN0cmFjdCUyMGRhcmslMjBsdXh1cnklMjB0ZXh0dXJlJTIwZ3JhaW58ZW58MHx8fHwxNzgxOTUwOTU4fDA&ixlib=rb-4.1.0&q=85",
+    "background_texture_2": "https://images.unsplash.com/photo-1690983320828-c01b88baacb0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzN8MHwxfHNlYXJjaHw0fHxhYnN0cmFjdCUyMGRhcmslMjBsdXh1cnklMjB0ZXh0dXJlJTIwZ3JhaW58ZW58MHx8fHwxNzgxOTUwOTU4fDA&ixlib=rb-4.1.0&q=85",
+    "portrait_campus": "https://images.unsplash.com/photo-1532170579297-281918c8ae72?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwzfHxjaW5lbWF0aWMlMjBjb3Jwb3JhdGUlMjBwb3J0cmFpdCUyMGRhcmt8ZW58MHx8fHwxNzgxOTUwOTU4fDA&ixlib=rb-4.1.0&q=85",
+    "portrait_company": "https://images.pexels.com/photos/9200331/pexels-photo-9200331.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "portrait_individual": "https://images.pexels.com/photos/33290983/pexels-photo-33290983.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+  },
+  "implementation_notes": {
+    "frameworks": "React, TailwindCSS, Framer Motion, Lenis (for smooth scroll), Lucide React (for icons).",
+    "testing": "All interactive elements (buttons, links, form inputs) must have a `data-testid` attribute (e.g., `data-testid='hero-cta-button'`).",
+    "avoid": "No purple/blue gradients. No floating 3D tech-bro blobs. No Inter or generic Sans for headings. No perfectly symmetrical equal-width grids (except for logos)."
+  }
+}
