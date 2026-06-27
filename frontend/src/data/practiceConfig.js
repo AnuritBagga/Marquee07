@@ -15,10 +15,10 @@ export const INTERVIEW_TYPES = [
   },
   {
     id: "domain",
-    label: "Domain / Role Specific",
+    label: "Others",
     icon: "🏗️",
-    desc: "CS fundamentals, Mechanical, Civil, Electrical, DBMS, OS, Networks, System Design, based on your resume.",
-    skills: ["CS Core", "DBMS", "OS", "Networks", "Mechanical", "Civil", "Electrical", "Management"],
+    desc: "CS fundamentals, Mechanical, Civil, Electrical, MBA, Commerce, DBMS, OS, Networks, System Design, based on your resume.",
+    skills: ["CS Core", "DBMS", "OS", "Networks", "Mechanical", "Civil", "Electrical", "MBA", "Commerce", "Management"],
     tips: [
       "Use the STAR method — Situation, Task, Action, Result. Be specific.",
       "Cite real projects from your resume. Interviewers will probe you on them.",
