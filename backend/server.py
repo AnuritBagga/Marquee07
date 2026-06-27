@@ -48,7 +48,7 @@ JUDGE0_BASE = "https://ce.judge0.com"
 JUDGE0_LANG_MAP = {"javascript": 63, "python": 71, "java": 62, "cpp": 54}
 
 app = FastAPI()
-api_router = APIRouter(prefix="/api")
+api_router = APIRouter()
 
 logging.basicConfig(
     level=logging.INFO,
@@ -895,15 +895,21 @@ async def get_persona(interview_type: str):
 
 
 # APP CONFIG
+# Get allowed origins from environment variable, with defaults for local development
+allowed_origins = os.environ.get(
+    "ALLOWED_ORIGINS",
+    "http://localhost:3000,http://127.0.0.1:3000"
+).split(",")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=allowed_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(api_router)
+app.include_router(api_router, prefix="/api")
 
 
 @app.on_event("shutdown")
