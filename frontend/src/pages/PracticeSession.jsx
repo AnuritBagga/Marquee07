@@ -598,29 +598,29 @@ export default function PracticeSession() {
 
   return (
     <div className="h-screen bg-[#050505] text-white flex flex-col overflow-hidden">
-      <header className="flex items-center justify-between px-6 py-3 border-b border-white/7 bg-[#050505]/95 backdrop-blur-md shrink-0 z-50">
-        <div className="flex items-center gap-3">
+      <header className="flex items-center justify-between px-3 sm:px-6 py-2 sm:py-3 border-b border-white/7 bg-[#050505]/95 backdrop-blur-md shrink-0 z-50">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <button 
             onClick={() => navigate("/")}
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity group"
+            className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity group shrink-0"
             title="Go to Home"
           >
-            <Lion className="w-8 h-8 text-[#D4AF37] group-hover:scale-110 transition-transform" />
-            <div className="font-serif text-lg tracking-widest text-[#D4AF37]">
+            <Lion className="w-6 h-6 sm:w-8 sm:h-8 text-[#D4AF37] group-hover:scale-110 transition-transform" />
+            <div className="font-serif text-base sm:text-lg tracking-widest text-[#D4AF37]">
               Marquee
-              <span className="text-white/20 text-[10px] tracking-[0.3em] font-sans ml-2">LIVE SESSION</span>
+              <span className="hidden sm:inline text-white/20 text-[10px] tracking-[0.3em] font-sans ml-2">LIVE SESSION</span>
             </div>
           </button>
           {qTypeBadge && (
-            <span className={`text-[10px] tracking-widest px-2 py-0.5 border rounded-sm ${
+            <span className={`text-[8px] sm:text-[10px] tracking-widest px-1.5 sm:px-2 py-0.5 border rounded-sm ${
               isSqlQ    ? "border-blue-500/30 bg-blue-500/10 text-blue-400" :
               isCodingQ ? "border-purple-500/30 bg-purple-500/10 text-purple-400" :
                           "border-white/10 bg-white/4 text-white/30"
             }`}>{qTypeBadge}</span>
           )}
         </div>
-        <div className="flex items-center gap-3">
-          <div className="font-mono text-sm text-[#D4AF37] border border-[#D4AF37]/20 bg-[#D4AF37]/8 px-3 py-1 rounded-sm">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <div className="font-mono text-xs sm:text-sm text-[#D4AF37] border border-[#D4AF37]/20 bg-[#D4AF37]/8 px-2 sm:px-3 py-0.5 sm:py-1 rounded-sm">
             {fmt(timerSeconds)}
           </div>
           <button
@@ -630,27 +630,28 @@ export default function PracticeSession() {
                 navigate("/");
               }
             }}
-            className="border border-white/10 text-white/30 text-[10px] tracking-widest uppercase px-3 py-1.5 hover:border-white/20 hover:text-white/50 transition-all rounded-sm"
+            className="border border-white/10 text-white/30 text-[8px] sm:text-[10px] tracking-widest uppercase px-2 sm:px-3 py-1 sm:py-1.5 hover:border-white/20 hover:text-white/50 transition-all rounded-sm"
           >
-            End Session
+            <span className="hidden sm:inline">End Session</span>
+            <span className="sm:hidden">End</span>
           </button>
         </div>
       </header>
 
-      <div className="flex flex-1 min-h-0">
-        <aside className="w-[236px] shrink-0 border-r border-white/7 bg-[#0A0A0A] flex flex-col">
-          <div className="p-4 border-b border-white/7">
+      <div className="flex flex-1 min-h-0 flex-col lg:flex-row">
+        <aside className="w-full lg:w-[236px] shrink-0 border-b lg:border-b-0 lg:border-r border-white/7 bg-[#0A0A0A] flex flex-col max-h-[40vh] lg:max-h-none">
+          <div className="p-3 sm:p-4 border-b border-white/7 hidden lg:block">
             <img src={interviewer.portrait} alt={interviewer.name} className="w-full h-32 object-cover object-top mb-3 grayscale-[15%]" />
             <div className="font-serif text-sm text-white">{interviewer.name}</div>
             <div className="text-[10px] text-white/30 tracking-wider mt-0.5">{interviewer.title}</div>
           </div>
 
-          <div className="flex items-center gap-2.5 px-4 py-2.5 border-b border-white/7">
+          <div className="flex items-center gap-2 sm:gap-2.5 px-3 sm:px-4 py-2 sm:py-2.5 border-b border-white/7">
             <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${phaseDotColor}`} />
-            <span className="text-[10px] tracking-widest uppercase text-white/35">{phaseLabel}</span>
+            <span className="text-[9px] sm:text-[10px] tracking-widest uppercase text-white/35 truncate">{phaseLabel}</span>
           </div>
 
-          <div ref={transcriptRef} className="flex-1 overflow-y-auto p-3 space-y-2.5 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10">
+          <div ref={transcriptRef} className="flex-1 overflow-y-auto p-2 sm:p-3 space-y-2 sm:space-y-2.5 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10">
             <div className="text-[9px] tracking-widest uppercase text-white/15 mb-1">Transcript</div>
             {history.map((t, i) => {
               const isAI = t.role === "assistant";

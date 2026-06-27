@@ -15,32 +15,32 @@ export const LiveDemo = () => {
       ref={ref}
       id="method"
       data-testid="live-demo-section"
-      className="relative py-28 md:py-40 overflow-hidden"
+      className="relative py-20 sm:py-28 md:py-40 overflow-hidden"
     >
-      <div className="max-w-[1400px] mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-12 lg:gap-20">
         {/* Sticky text block */}
         <div className="lg:col-span-5">
           <div className="lg:sticky lg:top-32">
             <p
               data-testid="method-overline"
-              className="text-[11px] uppercase tracking-[0.4em] text-[#D4AF37] mb-8"
+              className="text-[11px] uppercase tracking-[0.4em] text-[#D4AF37] mb-6 sm:mb-8"
             >
               02 — Method
             </p>
-            <h2 className="font-serif font-light text-white text-5xl md:text-6xl leading-[0.95] tracking-tight">
+            <h2 className="font-serif font-light text-white text-4xl sm:text-5xl md:text-6xl leading-[0.95] tracking-tight">
               Listens with intent.
               <br />
               <span className="italic text-white/70">Cross-questions</span>
               <br />
               with intelligence.
             </h2>
-            <p className="mt-10 text-white/55 text-base md:text-lg leading-relaxed max-w-md">
+            <p className="mt-6 sm:mt-10 text-white/55 text-sm sm:text-base md:text-lg leading-relaxed max-w-md">
               Marquee transcribes your voice in real time, evaluates the depth
               of your reasoning, and asks the precise follow-up question a
               senior interviewer would. Not a script. A conversation.
             </p>
 
-            <div className="mt-12 space-y-6">
+            <div className="mt-8 sm:mt-12 space-y-4 sm:space-y-6">
               {[
                 {
                   icon: Mic,
@@ -61,16 +61,16 @@ export const LiveDemo = () => {
                 <div
                   key={i}
                   data-testid={`method-feature-${i}`}
-                  className="flex items-start gap-5 group"
+                  className="flex items-start gap-4 sm:gap-5 group"
                 >
-                  <div className="hairline w-11 h-11 flex items-center justify-center text-white/70 group-hover:text-[#D4AF37] group-hover:border-[#D4AF37]/40 transition-colors duration-500">
+                  <div className="hairline w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center text-white/70 group-hover:text-[#D4AF37] group-hover:border-[#D4AF37]/40 transition-colors duration-500 shrink-0">
                     <f.icon size={16} strokeWidth={1.4} />
                   </div>
                   <div>
-                    <h3 className="font-serif text-xl text-white tracking-tight">
+                    <h3 className="font-serif text-lg sm:text-xl text-white tracking-tight">
                       {f.title}
                     </h3>
-                    <p className="text-white/50 text-sm mt-1.5 leading-relaxed max-w-sm">
+                    <p className="text-white/50 text-xs sm:text-sm mt-1 sm:mt-1.5 leading-relaxed max-w-sm">
                       {f.body}
                     </p>
                   </div>
@@ -87,32 +87,32 @@ export const LiveDemo = () => {
         >
           <div
             data-testid="live-demo-mockup"
-            className="hairline bg-black/40 backdrop-blur-2xl p-1.5"
+            className="hairline bg-black/40 backdrop-blur-2xl p-1 sm:p-1.5"
           >
             {/* window chrome */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
-                <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
-                <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
+            <div className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-3 border-b border-white/5">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-white/20" />
+                <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-white/20" />
+                <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-white/20" />
               </div>
-              <span className="font-mono text-[10px] text-white/40 uppercase tracking-[0.25em]">
+              <span className="hidden sm:inline font-mono text-[10px] text-white/40 uppercase tracking-[0.25em]">
                 marquee · session 0341 · live
               </span>
-              <div className="flex items-center gap-2 text-[10px] text-white/40 font-mono">
+              <div className="flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] text-white/40 font-mono">
                 <span className="w-1.5 h-1.5 rounded-full bg-red-500/80 animate-pulse" />
                 REC
               </div>
             </div>
 
             {/* body */}
-            <div className="p-6 md:p-8 space-y-6">
+            <div className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
               {/* Interviewer line */}
-              <div className="flex gap-4">
-                <span className="font-mono text-[10px] text-[#D4AF37] uppercase tracking-[0.3em] pt-1.5 w-24 shrink-0">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                <span className="font-mono text-[9px] sm:text-[10px] text-[#D4AF37] uppercase tracking-[0.25em] sm:tracking-[0.3em] sm:pt-1.5 sm:w-24 shrink-0">
                   Interviewer
                 </span>
-                <p className="font-serif text-2xl md:text-3xl text-white leading-snug">
+                <p className="font-serif text-xl sm:text-2xl md:text-3xl text-white leading-snug">
                   &ldquo;Walk me through how you&apos;d detect a cycle in a
                   linked list. Then tell me why your approach is the right
                   one.&rdquo;
@@ -120,12 +120,12 @@ export const LiveDemo = () => {
               </div>
 
               {/* Candidate audio block */}
-              <div className="hairline bg-white/[0.02] p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="font-mono text-[10px] text-white/50 uppercase tracking-[0.3em]">
+              <div className="hairline bg-white/[0.02] p-3 sm:p-5">
+                <div className="flex items-center justify-between mb-2 sm:mb-3">
+                  <span className="font-mono text-[9px] sm:text-[10px] text-white/50 uppercase tracking-[0.25em] sm:tracking-[0.3em]">
                     Candidate · speaking
                   </span>
-                  <div className="flex items-end gap-[3px] h-6">
+                  <div className="flex items-end gap-[2px] sm:gap-[3px] h-5 sm:h-6">
                     {[0.4, 0.7, 0.5, 0.9, 0.3, 0.8, 0.6, 0.5, 0.7].map(
                       (h, i) => (
                         <span
@@ -134,13 +134,13 @@ export const LiveDemo = () => {
                             height: `${h * 100}%`,
                             animationDelay: `${i * 0.08}s`,
                           }}
-                          className="audio-bar w-[3px] bg-[#D4AF37]/80"
+                          className="audio-bar w-[2px] sm:w-[3px] bg-[#D4AF37]/80"
                         />
                       ),
                     )}
                   </div>
                 </div>
-                <p className="text-white/70 text-sm md:text-base leading-relaxed font-sans">
+                <p className="text-white/70 text-xs sm:text-sm md:text-base leading-relaxed font-sans">
                   &ldquo;I&apos;d use Floyd&apos;s tortoise and hare — two
                   pointers, one moving twice as fast. If they ever meet,
                   there&apos;s a cycle. O(n) time, O(1) space, and it&apos;s
@@ -151,16 +151,16 @@ export const LiveDemo = () => {
               </div>
 
               {/* Code editor mockup */}
-              <div className="hairline bg-[#0A0A0A]">
-                <div className="flex items-center justify-between px-4 py-2 border-b border-white/5">
-                  <span className="font-mono text-[10px] text-white/40 uppercase tracking-[0.3em]">
+              <div className="hairline bg-[#0A0A0A] overflow-hidden">
+                <div className="flex items-center justify-between px-3 sm:px-4 py-1.5 sm:py-2 border-b border-white/5">
+                  <span className="font-mono text-[9px] sm:text-[10px] text-white/40 uppercase tracking-[0.25em] sm:tracking-[0.3em]">
                     solution.py
                   </span>
-                  <span className="font-mono text-[10px] text-white/40">
+                  <span className="hidden sm:inline font-mono text-[10px] text-white/40">
                     Python 3.11
                   </span>
                 </div>
-                <pre className="font-mono text-[12px] md:text-[13px] leading-relaxed p-5 text-white/80">
+                <pre className="font-mono text-[10px] sm:text-[12px] md:text-[13px] leading-relaxed p-3 sm:p-5 text-white/80 overflow-x-auto">
                   <span className="text-white/30">1  </span>
                   <span className="text-[#D4AF37]">def</span>{" "}
                   <span className="text-white">has_cycle</span>(head):{"\n"}
@@ -188,12 +188,12 @@ export const LiveDemo = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.5 }}
                 transition={{ duration: 0.9 }}
-                className="border-l border-[#D4AF37]/50 pl-5 py-1"
+                className="border-l border-[#D4AF37]/50 pl-3 sm:pl-5 py-1"
               >
-                <span className="font-mono text-[10px] text-[#D4AF37] uppercase tracking-[0.3em]">
+                <span className="font-mono text-[9px] sm:text-[10px] text-[#D4AF37] uppercase tracking-[0.25em] sm:tracking-[0.3em]">
                   Marquee · follow-up
                 </span>
-                <p className="font-serif italic text-white/90 text-lg md:text-xl mt-2 leading-snug">
+                <p className="font-serif italic text-white/90 text-base sm:text-lg md:text-xl mt-1.5 sm:mt-2 leading-snug">
                   &ldquo;Interesting. But what happens when the list is
                   empty? And could you prove formally why the pointers must
                   meet?&rdquo;
@@ -203,7 +203,7 @@ export const LiveDemo = () => {
           </div>
 
           {/* meta caption */}
-          <p className="mt-5 font-mono text-[10px] uppercase tracking-[0.3em] text-white/30 text-right">
+          <p className="mt-3 sm:mt-5 font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.25em] sm:tracking-[0.3em] text-white/30 text-right">
             — captured from a live session
           </p>
         </motion.div>

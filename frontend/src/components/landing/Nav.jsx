@@ -51,19 +51,19 @@ export const Nav = () => {
           : "bg-transparent"
       }`}
     >
-      <div className="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-12 h-20 flex items-center justify-between">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-12 h-16 sm:h-20 flex items-center justify-between">
         <a
           href="#top"
           data-testid="nav-logo"
-          className="flex items-center gap-3 group"
+          className="flex items-center gap-2 sm:gap-3 group"
         >
-          <Lion size={32} testId="nav-lion" animate glow />
-          <span className="font-serif text-2xl tracking-tight text-white">
+          <Lion size={28} testId="nav-lion" animate glow className="sm:w-8 sm:h-8" />
+          <span className="font-serif text-lg sm:text-2xl tracking-tight text-white">
             Marquee
           </span>
         </a>
 
-        <div className="hidden md:flex items-center gap-12">
+        <div className="hidden lg:flex items-center gap-8 xl:gap-12">
           {links.map((l) => (
             <a
               key={l.href}
@@ -122,19 +122,19 @@ export const Nav = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Auth Buttons */}
           {!loading && !user && (
             <>
               <Link
                 to="/login"
-                className="px-4 py-2 text-[10px] uppercase tracking-[0.2em] text-white/70 border border-white/20 hover:text-white hover:bg-white/5 hover:border-white/40 transition-all duration-300 whitespace-nowrap hidden md:block"
+                className="hidden md:block px-3 sm:px-4 py-1.5 sm:py-2 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-white/70 border border-white/20 hover:text-white hover:bg-white/5 hover:border-white/40 transition-all duration-300 whitespace-nowrap"
               >
                 Login
               </Link>
               <Link
                 to="/register"
-                className="px-4 py-2 text-[10px] uppercase tracking-[0.2em] bg-[#D4AF37] text-black hover:bg-white transition-colors duration-300 whitespace-nowrap"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] bg-[#D4AF37] text-black hover:bg-white transition-colors duration-300 whitespace-nowrap font-semibold"
               >
                 Register
               </Link>
@@ -145,21 +145,22 @@ export const Nav = () => {
           <Link
             to="/practice"
             data-testid="nav-cta-practice"
-            className="px-5 py-2 text-[10px] uppercase tracking-[0.25em] text-white border border-white/40 hover:bg-[#D4AF37] hover:text-black hover:border-[#D4AF37] transition-all duration-300 whitespace-nowrap"
+            className="px-3 sm:px-5 py-1.5 sm:py-2 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-white border border-white/40 hover:bg-[#D4AF37] hover:text-black hover:border-[#D4AF37] transition-all duration-300 whitespace-nowrap font-semibold"
           >
-            Start Practice
+            <span className="hidden sm:inline">Start Practice</span>
+            <span className="sm:hidden">Practice</span>
           </Link>
 
           {/* User Profile - Shifted Right with Golden Outline */}
           {!loading && user && (
-            <div className="relative ml-6">
+            <div className="relative ml-2 sm:ml-6">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowUserMenu(!showUserMenu);
                   setShowBusinessMenu(false);
                 }}
-                className="relative w-10 h-10 rounded-full bg-transparent flex items-center justify-center text-[#D4AF37] font-bold text-sm transition-all duration-300 border-2 border-[#D4AF37] hover:border-[#F4D03F] hover:scale-110 hover:shadow-lg hover:shadow-[#D4AF37]/30 group"
+                className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-transparent flex items-center justify-center text-[#D4AF37] font-bold text-xs sm:text-sm transition-all duration-300 border-2 border-[#D4AF37] hover:border-[#F4D03F] hover:scale-110 hover:shadow-lg hover:shadow-[#D4AF37]/30 group"
               >
                 <span className="relative z-10">
                   {user.email?.charAt(0).toUpperCase()}
@@ -169,19 +170,21 @@ export const Nav = () => {
               </button>
               
               {showUserMenu && (
-                <div className="absolute right-0 mt-3 w-72 bg-black/95 border border-[#D4AF37]/40 backdrop-blur-md z-50 shadow-2xl rounded-lg overflow-hidden">
+                <div className="absolute right-0 mt-3 w-64 sm:w-72 bg-black/95 border border-[#D4AF37]/40 backdrop-blur-md z-50 shadow-2xl rounded-lg overflow-hidden"
+                  style={{ maxWidth: 'calc(100vw - 2rem)' }}
+                >
                   {/* Header with gradient */}
-                  <div className="p-5 bg-gradient-to-br from-[#D4AF37]/10 to-transparent border-b border-[#D4AF37]/20">
-                    <div className="flex items-center gap-4">
+                  <div className="p-4 sm:p-5 bg-gradient-to-br from-[#D4AF37]/10 to-transparent border-b border-[#D4AF37]/20">
+                    <div className="flex items-center gap-3 sm:gap-4">
                       <div className="relative">
-                        <div className="w-14 h-14 rounded-full bg-transparent border-2 border-[#D4AF37] flex items-center justify-center text-[#D4AF37] font-bold text-xl shadow-lg">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-transparent border-2 border-[#D4AF37] flex items-center justify-center text-[#D4AF37] font-bold text-lg sm:text-xl shadow-lg">
                           {user.email?.charAt(0).toUpperCase()}
                         </div>
                         {/* Online indicator */}
-                        <span className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-black" />
+                        <span className="absolute bottom-0 right-0 w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full border-2 border-black" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-white text-base font-semibold truncate mb-0.5">
+                        <p className="text-white text-sm sm:text-base font-semibold truncate mb-0.5">
                           {user.user_metadata?.full_name || 'User'}
                         </p>
                         <p className="text-white/60 text-xs truncate">
@@ -198,7 +201,7 @@ export const Nav = () => {
                   {/* Sign out button */}
                   <button
                     onClick={handleSignOut}
-                    className="w-full flex items-center gap-3 px-5 py-4 text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-red-500/10 hover:to-transparent transition-all text-sm group border-t border-white/5"
+                    className="w-full flex items-center gap-3 px-4 sm:px-5 py-3 sm:py-4 text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-red-500/10 hover:to-transparent transition-all text-sm group border-t border-white/5"
                   >
                     <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center group-hover:bg-red-500/20 transition-colors">
                       <LogOut size={16} className="text-red-400 group-hover:text-red-300 transition-colors" />

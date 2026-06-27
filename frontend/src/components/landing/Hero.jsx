@@ -73,7 +73,7 @@ export const Hero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
           data-testid="hero-heading"
-          className="font-serif font-light text-white text-[15vw] md:text-[10vw] lg:text-[9rem] leading-[0.88] tracking-[-0.03em]"
+          className="font-serif font-light text-white text-[13vw] sm:text-[11vw] md:text-[10vw] lg:text-[9rem] leading-[0.88] tracking-[-0.03em] px-4 sm:px-0"
         >
           The Interview,
           <br />
@@ -87,29 +87,29 @@ export const Hero = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.4, delay: 0.8 }}
-          className="mt-12 max-w-xl mx-auto"
+          className="mt-8 sm:mt-12 max-w-xl mx-auto px-4 sm:px-6"
         >
           <p
             data-testid="hero-subtitle"
-            className="font-sans text-white/60 text-base md:text-lg leading-relaxed tracking-wide"
+            className="font-sans text-white/60 text-sm sm:text-base md:text-lg leading-relaxed tracking-wide"
           >
             Real-time AI cross-questioning that listens, reasons, and responds
             like a true interviewer. Built for campuses, companies, and the
             quietly ambitious.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-14">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 mt-10 sm:mt-14">
             <Link
               to="/practice"
               data-testid="hero-cta-primary"
-              className="btn-royal bg-[#D4AF37] text-black px-6 sm:px-8 py-3 sm:py-4 text-[11px] uppercase tracking-[0.3em] hover:bg-white transition-colors duration-500 w-full sm:w-auto text-center whitespace-nowrap"
+              className="btn-royal bg-[#D4AF37] text-black px-6 sm:px-8 py-3.5 sm:py-4 text-[10px] sm:text-[11px] uppercase tracking-[0.25em] sm:tracking-[0.3em] hover:bg-white transition-colors duration-500 text-center whitespace-nowrap font-semibold"
             >
               Start Your Practice
             </Link>
             <a
               href="#method"
               data-testid="hero-cta-secondary"
-              className="hairline-strong px-6 sm:px-8 py-3 sm:py-4 text-[11px] uppercase tracking-[0.3em] text-white hover:bg-white hover:text-black transition-colors duration-500 w-full sm:w-auto text-center whitespace-nowrap"
+              className="hairline-strong px-6 sm:px-8 py-3.5 sm:py-4 text-[10px] sm:text-[11px] uppercase tracking-[0.25em] sm:tracking-[0.3em] text-white hover:bg-white hover:text-black transition-colors duration-500 text-center whitespace-nowrap font-semibold"
             >
               See the Method
             </a>

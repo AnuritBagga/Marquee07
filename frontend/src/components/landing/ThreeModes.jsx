@@ -69,34 +69,34 @@ const Card = ({ mode, i }) => {
     <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent" />
 
     {/* content */}
-    <div className="relative z-10 h-full min-h-[520px] lg:min-h-[420px] p-8 md:p-12 flex flex-col justify-between">
+    <div className="relative z-10 h-full min-h-[380px] sm:min-h-[420px] lg:min-h-[420px] p-6 sm:p-8 md:p-12 flex flex-col justify-between">
       <div className="flex items-center justify-between">
         <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-[#D4AF37]">
           Mode {mode.tag}
         </span>
         <ArrowUpRight
-          size={20}
+          size={18}
           strokeWidth={1.2}
-          className="text-white/40 group-hover:text-[#D4AF37] group-hover:rotate-45 transition-all duration-500"
+          className="text-white/40 group-hover:text-[#D4AF37] group-hover:rotate-45 transition-all duration-500 sm:w-5 sm:h-5"
         />
       </div>
 
       <div>
-        <h3 className="font-serif text-4xl md:text-5xl text-white tracking-tight leading-[0.95] mb-4">
+        <h3 className="font-serif text-3xl sm:text-4xl md:text-5xl text-white tracking-tight leading-[0.95] mb-3 sm:mb-4">
           {mode.title}
         </h3>
-        <p className="font-serif italic text-[#D4AF37]/90 text-lg md:text-xl mb-4">
+        <p className="font-serif italic text-[#D4AF37]/90 text-base sm:text-lg md:text-xl mb-3 sm:mb-4">
           {mode.subtitle}
         </p>
-        <p className="text-white/65 text-sm md:text-base leading-relaxed max-w-md">
+        <p className="text-white/65 text-xs sm:text-sm md:text-base leading-relaxed max-w-md">
           {mode.body}
         </p>
 
-        <ul className="mt-6 flex flex-wrap gap-2">
+        <ul className="mt-4 sm:mt-6 flex flex-wrap gap-2">
           {mode.points.map((p) => (
             <li
               key={p}
-              className="hairline px-3 py-1.5 text-[10px] uppercase tracking-[0.25em] text-white/70"
+              className="hairline px-2.5 sm:px-3 py-1 sm:py-1.5 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-white/70"
             >
               {p}
             </li>
@@ -113,27 +113,27 @@ export const ThreeModes = () => {
     <section
       id="modes"
       data-testid="modes-section"
-      className="relative py-28 md:py-40"
+      className="relative py-20 sm:py-28 md:py-40"
     >
-      <div className="max-w-[1400px] mx-auto px-6 md:px-12">
-        <div className="flex items-end justify-between flex-wrap gap-6 mb-16 md:mb-24">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-12">
+        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 mb-12 sm:mb-16 md:mb-24">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.4em] text-[#D4AF37] mb-6">
+            <p className="text-[11px] uppercase tracking-[0.4em] text-[#D4AF37] mb-4 sm:mb-6">
               03 — Three Worlds
             </p>
-            <h2 className="font-serif font-light text-white text-5xl md:text-7xl leading-[0.92] tracking-tight max-w-2xl">
+            <h2 className="font-serif font-light text-white text-4xl sm:text-5xl md:text-7xl leading-[0.92] tracking-tight max-w-2xl">
               One engine.
               <br />
               <span className="italic text-white/70">Three</span> rooms.
             </h2>
           </div>
-          <p className="text-white/55 text-base md:text-lg max-w-sm leading-relaxed">
+          <p className="text-white/55 text-sm sm:text-base md:text-lg max-w-sm leading-relaxed">
             Marquee adapts its temperament — gentle for learners, ruthless for
             recruiters, surgical for solo practice.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 auto-rows-[420px]">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 md:gap-8 auto-rows-[380px] sm:auto-rows-[420px]">
           {MODES.map((m, i) => (
             <Card key={i} mode={m} i={i} />
           ))}

@@ -29,10 +29,10 @@ const Row = ({ items, direction = "left", speed = 38 }) => (
       {[...items, ...items].map((d, i) => (
         <span
           key={i}
-          className="font-serif italic text-white/15 hover:text-[#D4AF37] transition-colors duration-700 text-7xl md:text-9xl tracking-tight px-10"
+          className="font-serif italic text-white/15 hover:text-[#D4AF37] transition-colors duration-700 text-5xl sm:text-7xl md:text-9xl tracking-tight px-6 sm:px-10"
         >
           {d}
-          <span className="not-italic text-[#D4AF37]/40 mx-8 align-middle text-4xl">
+          <span className="not-italic text-[#D4AF37]/40 mx-4 sm:mx-8 align-middle text-2xl sm:text-4xl">
             ✦
           </span>
         </span>
@@ -55,19 +55,19 @@ export const Domains = () => {
       ref={ref}
       id="domains"
       data-testid="domains-section"
-      className="relative py-28 md:py-40 overflow-hidden border-y border-white/5"
+      className="relative py-20 sm:py-28 md:py-40 overflow-hidden border-y border-white/5"
     >
-      <div className="max-w-[1400px] mx-auto px-6 md:px-12 mb-16 md:mb-24 flex items-end justify-between flex-wrap gap-6">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-12 mb-12 sm:mb-16 md:mb-24 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.4em] text-[#D4AF37] mb-6">
+          <p className="text-[11px] uppercase tracking-[0.4em] text-[#D4AF37] mb-4 sm:mb-6">
             04 — Domains
           </p>
-          <h2 className="font-serif font-light text-white text-5xl md:text-7xl leading-[0.92] tracking-tight max-w-3xl">
+          <h2 className="font-serif font-light text-white text-4xl sm:text-5xl md:text-7xl leading-[0.92] tracking-tight max-w-3xl">
             From algorithms to{" "}
             <span className="italic text-white/70">UPSC.</span>
           </h2>
         </div>
-        <p className="text-white/55 text-base md:text-lg max-w-sm leading-relaxed">
+        <p className="text-white/55 text-sm sm:text-base md:text-lg max-w-sm leading-relaxed">
           Thirty domains. One disciplined examiner. Pick yours — or feed it the
           job description and watch it improvise.
         </p>
@@ -80,7 +80,7 @@ export const Domains = () => {
         <Row items={[...DOMAINS].reverse()} direction="right" speed={62} />
       </motion.div>
 
-      <div className="max-w-[1400px] mx-auto px-6 md:px-12 mt-20 grid grid-cols-2 md:grid-cols-4 gap-8">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-12 mt-16 sm:mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
         {[
           { k: "30+", v: "Domains covered" },
           { k: "1.4s", v: "Avg follow-up latency" },
@@ -90,12 +90,12 @@ export const Domains = () => {
           <div
             key={i}
             data-testid={`stat-${i}`}
-            className="hairline p-8 hover:border-[#D4AF37]/40 transition-colors duration-500"
+            className="hairline p-4 sm:p-6 md:p-8 hover:border-[#D4AF37]/40 transition-colors duration-500"
           >
-            <p className="font-serif text-4xl md:text-5xl text-white tracking-tight">
+            <p className="font-serif text-3xl sm:text-4xl md:text-5xl text-white tracking-tight">
               {s.k}
             </p>
-            <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40 mt-3">
+            <p className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.25em] sm:tracking-[0.3em] text-white/40 mt-2 sm:mt-3">
               {s.v}
             </p>
           </div>
