@@ -9,7 +9,7 @@ import PracticeScorecard from "../components/practice/PracticeScorecard";
 import { INTERVIEWERS, getInterviewType } from "../data/practiceConfig";
 import Lion from "../components/brand/Lion";
 import lionLogo from "../assets/brand/lion-mascot-lg.png";
-import CameraFeed from "../components/practice/CameraFeed";
+import DraggableCamera from "../components/practice/DraggableCamera";
 import useFullscreen from "../hooks/useFullscreen";
 
 // ─── Real interviewer assets ──────────────────────────────────────────────────
@@ -665,9 +665,10 @@ export default function PracticeSession() {
   const [warned,            setWarned]            = useState(false);
   const [drawerOpen,        setDrawerOpen]        = useState(false);
   const [cameraActive,      setCameraActive]      = useState(false);
+  const [showFullscreenPrompt, setShowFullscreenPrompt] = useState(true);
 
   const sessionContainerRef = useRef(null);
-  const { isFullscreen, toggleFullscreen } = useFullscreen();
+  const { isFullscreen, enterFullscreen } = useFullscreen();
 
   const transcriptRef   = useRef(null);
   const textRef         = useRef(null);
@@ -681,6 +682,13 @@ export default function PracticeSession() {
 
   useEffect(() => {
     if (!config.interviewType) { navigate("/practice"); return; }
+    
+    // Don't start interview until fullscreen is enabled
+    if (!isFullscreen) {
+      setShowFullscreenPrompt(true);
+      return;
+    }
+
     if (hasStartedRef.current) {
       console.log("⚠️ Already started, skipping");
       return;
@@ -688,9 +696,10 @@ export default function PracticeSession() {
 
     hasStartedRef.current = true;
     console.log("🚀 Interview START called from component");
+    setShowFullscreenPrompt(false);
     start();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isFullscreen]);
 
   useEffect(() => {
     if (transcriptRef.current) transcriptRef.current.scrollTop = transcriptRef.current.scrollHeight;
@@ -813,6 +822,69 @@ export default function PracticeSession() {
   const codingCritical = isCodingQ && answerTimeLeft <= 30;
   const progressPct    = Math.min((questionIndex / TOTAL_QUESTIONS) * 100, 100);
 
+  // Fullscreen prompt modal
+  if (showFullscreenPrompt || !isFullscreen) {
+    return (
+      <div className="h-screen bg-[#050505] text-white flex items-center justify-center">
+        <div className="max-w-md mx-auto px-6">
+          <div className="bg-[#0A0A0A] border border-white/10 rounded-2xl p-8 text-center">
+            <div className="mb-6">
+              <Lion className="w-16 h-16 text-[#D4AF37] mx-auto mb-4" />
+              <h2 className="text-2xl font-serif text-white mb-2">Fullscreen Required</h2>
+              <p className="text-white/60 text-sm leading-relaxed">
+                For the best interview experience and to minimize distractions, 
+                please enable fullscreen mode before starting your session.
+              </p>
+            </div>
+
+            <div className="space-y-3 mb-6 text-left">
+              <div className="flex items-start gap-3 text-xs text-white/40">
+                <svg className="w-5 h-5 text-[#D4AF37] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Immersive interview environment</span>
+              </div>
+              <div className="flex items-start gap-3 text-xs text-white/40">
+                <svg className="w-5 h-5 text-[#D4AF37] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Minimize distractions and notifications</span>
+              </div>
+              <div className="flex items-start gap-3 text-xs text-white/40">
+                <svg className="w-5 h-5 text-[#D4AF37] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Your camera will be visible in bottom-left corner</span>
+              </div>
+            </div>
+
+            <button
+              onClick={async () => {
+                const success = await enterFullscreen(sessionContainerRef.current);
+                if (success) {
+                  setShowFullscreenPrompt(false);
+                }
+              }}
+              className="w-full bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-black font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+              </svg>
+              Enter Fullscreen & Start Interview
+            </button>
+
+            <button
+              onClick={() => navigate("/practice")}
+              className="mt-3 text-xs text-white/30 hover:text-white/50 transition-colors"
+            >
+              Cancel and go back
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (phase === "ended" || score) {
     return (
       <PracticeScorecard
@@ -856,24 +928,6 @@ export default function PracticeSession() {
             <span className={`w-1.5 h-1.5 rounded-full ${phaseDotColor} motion-reduce:animate-none`} />
             <span className="text-[10px] tracking-widest uppercase text-white/35 max-w-[140px] truncate">{phaseLabel}</span>
           </div>
-          
-          {/* Fullscreen toggle button */}
-          <button
-            onClick={() => toggleFullscreen(sessionContainerRef.current)}
-            className="border border-white/10 text-white/40 hover:text-[#D4AF37] hover:border-[#D4AF37]/30 p-1.5 sm:p-2 rounded-sm transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-[#D4AF37]"
-            title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
-          >
-            {isFullscreen ? (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25" />
-              </svg>
-            ) : (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-              </svg>
-            )}
-          </button>
-
           <div className="font-mono text-xs sm:text-sm text-[#D4AF37] border border-[#D4AF37]/20 bg-[#D4AF37]/8 px-2 sm:px-3 py-0.5 sm:py-1 rounded-sm">
             {fmt(timerSeconds)}
           </div>
@@ -915,7 +969,7 @@ export default function PracticeSession() {
         />
 
         {activeProblem ? (
-          // ── Coding / SQL round: the editor takes the screen, interviewer + user camera as small badges ──
+          // ── Coding / SQL round: the editor takes the screen, interviewer shrinks to a badge ──
           <div className="h-full flex flex-col overflow-hidden relative z-10">
             <div className="px-4 sm:px-8 pt-3 pb-2.5 border-b border-white/7 shrink-0 bg-[#060606]">
               <div className="text-[10px] tracking-[0.3em] uppercase text-white/20 mb-1">
@@ -929,16 +983,6 @@ export default function PracticeSession() {
 
             <div className="px-4 sm:px-6 py-2 border-b border-white/7 bg-[#0a0a0a] shrink-0 flex items-center gap-3">
               <InterviewerBadge interviewer={interviewer} phase={phase} />
-              
-              {/* User camera badge - small version for coding screen */}
-              <div className="relative w-16 sm:w-20 aspect-video rounded overflow-hidden ring-2 ring-white/10 shrink-0">
-                <CameraFeed 
-                  autoStart={true}
-                  onCameraStateChange={setCameraActive}
-                  className="w-full h-full"
-                />
-              </div>
-
               <div className={`font-mono text-[13px] px-3 py-1 border rounded-md flex items-center gap-1.5 ${
                 codingCritical ? "border-red-500/40 bg-red-500/8 text-red-400 animate-pulse motion-reduce:animate-none" :
                 codingUrgent   ? "border-yellow-500/30 bg-yellow-500/6 text-yellow-400" :
@@ -971,47 +1015,33 @@ export default function PracticeSession() {
             />
           </div>
         ) : (
-          // ── Verbal round: interviewer on the left, user camera on top-right, question + answer below ──
+          // ── Verbal round: interviewer on the left (~70%), question + answer on the right (~30%) ──
           <div className="h-full overflow-hidden relative z-10">
-            <div className="h-full flex flex-col gap-4 sm:gap-5 px-3 sm:px-6 py-4 sm:py-6">
+            <div className="h-full flex flex-col lg:flex-row gap-4 sm:gap-6 px-3 sm:px-6 py-4 sm:py-6">
 
-              {/* Top section: Interviewer (large) + User Camera (small overlay) */}
-              <div className="relative flex-[6] min-h-[320px] lg:min-h-[400px]">
-                {/* Main interviewer video */}
-                <VideoStage
-                  interviewer={interviewer}
-                  phase={phase}
-                  phaseLabel={phaseLabel}
-                  questionIndex={questionIndex}
-                  questionStarted={displayedQuestion.length > 0}
-                />
-
-                {/* User camera feed - positioned at top right corner */}
-                <div className="absolute top-3 right-3 w-[140px] sm:w-[180px] md:w-[220px] aspect-video z-20 shadow-2xl ring-2 ring-white/10 rounded-lg overflow-hidden">
-                  <CameraFeed 
-                    autoStart={true}
-                    onCameraStateChange={setCameraActive}
-                    className="w-full h-full"
+              {/* Left: interviewer stage */}
+              <div className="lg:flex-[7] flex flex-col min-h-[300px] lg:min-h-0 lg:h-full gap-3">
+                <div className="relative flex-1 min-h-0">
+                  <VideoStage
+                    interviewer={interviewer}
+                    phase={phase}
+                    phaseLabel={phaseLabel}
+                    questionIndex={questionIndex}
+                    questionStarted={displayedQuestion.length > 0}
                   />
-                  {/* Camera label */}
-                  <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded text-[9px] text-white/70">
-                    You
-                  </div>
                 </div>
-
-                {/* Waveform bar at bottom of video section */}
-                <div className="absolute bottom-3 left-3 right-3 flex items-center gap-3 z-10">
+                <div className="flex items-center gap-4 shrink-0">
                   <WaveformBar
                     active={isSpeaking || isListening}
                     mode={isSpeaking ? "speaking" : isListening ? "listening" : "idle"}
                     amplitude={amplitude}
                   />
-                  <span className="text-[10px] sm:text-[11px] text-white/30 bg-black/40 backdrop-blur-sm px-2 py-1 rounded">{phaseLabel}</span>
+                  <span className="text-[11px] text-white/25">{phaseLabel}</span>
                 </div>
               </div>
 
-              {/* Bottom section: Question + Answer controls */}
-              <div className="flex-[4] flex flex-col min-h-0 overflow-y-auto pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10">
+              {/* Right: question + answer + submit */}
+              <div className="lg:flex-[3] flex flex-col min-h-0 lg:h-full overflow-y-auto pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10">
                 <div className="text-[10px] tracking-[0.3em] uppercase text-white/25 mb-2 shrink-0">
                   {questionIndex > 0 ? `Question ${questionIndex} of ${TOTAL_QUESTIONS}` : "Loading…"}
                 </div>
@@ -1111,6 +1141,9 @@ export default function PracticeSession() {
           questionIndex={questionIndex}
           QUESTION_SCHEDULE={QUESTION_SCHEDULE}
         />
+
+        {/* Draggable Camera Feed - Bottom-left corner, can be moved anywhere */}
+        <DraggableCamera onCameraStateChange={setCameraActive} />
       </div>
     </div>
   );
