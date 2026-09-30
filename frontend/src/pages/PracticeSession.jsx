@@ -860,9 +860,19 @@ export default function PracticeSession() {
 
             <button
               onClick={async () => {
-                const success = await enterFullscreen(sessionContainerRef.current);
-                if (success) {
-                  setShowFullscreenPrompt(false);
+                console.log("Fullscreen button clicked");
+                try {
+                  // Use document.documentElement (entire page) for fullscreen
+                  const success = await enterFullscreen(document.documentElement);
+                  console.log("Fullscreen result:", success);
+                  if (success) {
+                    setShowFullscreenPrompt(false);
+                  } else {
+                    alert("Unable to enter fullscreen. Please try again or check your browser settings.");
+                  }
+                } catch (error) {
+                  console.error("Fullscreen error:", error);
+                  alert("Fullscreen is not supported or was denied. Please try again.");
                 }
               }}
               className="w-full bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-black font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"

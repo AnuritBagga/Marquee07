@@ -29,24 +29,38 @@ export default function useFullscreen() {
 
   // Enter fullscreen mode
   const enterFullscreen = useCallback(async (element = document.documentElement) => {
+    console.log("enterFullscreen called, element:", element);
+    console.log("isSupported:", isSupported());
+    
     if (!isSupported()) {
       console.warn("Fullscreen API is not supported in this browser");
       return false;
     }
 
     try {
+      console.log("Attempting to request fullscreen...");
       if (element.requestFullscreen) {
+        console.log("Using requestFullscreen");
         await element.requestFullscreen();
       } else if (element.webkitRequestFullscreen) {
+        console.log("Using webkitRequestFullscreen");
         await element.webkitRequestFullscreen();
       } else if (element.mozRequestFullScreen) {
+        console.log("Using mozRequestFullScreen");
         await element.mozRequestFullScreen();
       } else if (element.msRequestFullscreen) {
+        console.log("Using msRequestFullscreen");
         await element.msRequestFullscreen();
+      } else {
+        console.error("No fullscreen method available");
+        return false;
       }
+      console.log("Fullscreen request successful");
       return true;
     } catch (err) {
       console.error("Error entering fullscreen:", err);
+      console.error("Error name:", err.name);
+      console.error("Error message:", err.message);
       return false;
     }
   }, []);
