@@ -31,7 +31,7 @@ export default function DemoExam() {
         shuffle_options: true,
         negative_marking: false,
         show_results_immediately: true,
-        offline_mode_enabled: false // Keep false for demo - simpler UX
+        offline_mode_enabled: true // Enable offline mode for full demo experience
       }
     };
 
