@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Lion from "@/components/brand/Lion";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut, User, ChevronDown, Building2, GraduationCap, UserCircle } from "lucide-react";
+import { LogOut, User, ChevronDown, Building2, GraduationCap, UserCircle, ClipboardCheck, BookOpen } from "lucide-react";
 
 export const Nav = () => {
   const [scrolled, setScrolled] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showBusinessMenu, setShowBusinessMenu] = useState(false);
+  const [showAssessmentMenu, setShowAssessmentMenu] = useState(false);
   const navigate = useNavigate();
   const { user, signOut, loading } = useAuth();
 
@@ -22,13 +23,14 @@ export const Nav = () => {
     const handleClickOutside = () => {
       setShowUserMenu(false);
       setShowBusinessMenu(false);
+      setShowAssessmentMenu(false);
     };
     
-    if (showUserMenu || showBusinessMenu) {
+    if (showUserMenu || showBusinessMenu || showAssessmentMenu) {
       document.addEventListener("click", handleClickOutside);
       return () => document.removeEventListener("click", handleClickOutside);
     }
-  }, [showUserMenu, showBusinessMenu]);
+  }, [showUserMenu, showBusinessMenu, showAssessmentMenu]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -167,6 +169,54 @@ export const Nav = () => {
             <span className="hidden sm:inline">Start Practice</span>
             <span className="sm:hidden">Practice</span>
           </Link>
+
+          {/* Assessment Portal Button - NEW */}
+          <div className="relative">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowAssessmentMenu(!showAssessmentMenu);
+                setShowBusinessMenu(false);
+                setShowUserMenu(false);
+              }}
+              className="px-3 sm:px-5 py-1.5 sm:py-2 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-black bg-[#D4AF37] hover:bg-[#F4D03F] transition-all duration-300 whitespace-nowrap font-semibold flex items-center gap-1"
+            >
+              <span className="hidden sm:inline">Assessment</span>
+              <span className="sm:hidden">Exam</span>
+              <ChevronDown size={12} className={`transition-transform duration-200 ${showAssessmentMenu ? 'rotate-180' : ''}`} />
+            </button>
+            
+            {showAssessmentMenu && (
+              <div className="absolute right-0 mt-4 w-64 bg-black/95 border border-[#D4AF37]/30 backdrop-blur-md z-50 shadow-2xl">
+                <Link
+                  to="/organization/dashboard"
+                  className="flex items-center gap-3 px-4 py-3.5 text-white/90 hover:text-white hover:bg-[#D4AF37]/10 transition-colors border-b border-white/10 group"
+                  onClick={() => setShowAssessmentMenu(false)}
+                >
+                  <div className="w-9 h-9 rounded-full bg-[#D4AF37]/10 flex items-center justify-center group-hover:bg-[#D4AF37]/20 transition-colors">
+                    <Building2 size={18} className="text-[#D4AF37]" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium">Organization Portal</div>
+                    <div className="text-xs text-white/50">Create & manage exams</div>
+                  </div>
+                </Link>
+                <Link
+                  to="/exam/login"
+                  className="flex items-center gap-3 px-4 py-3.5 text-white/90 hover:text-white hover:bg-[#D4AF37]/10 transition-colors group"
+                  onClick={() => setShowAssessmentMenu(false)}
+                >
+                  <div className="w-9 h-9 rounded-full bg-[#D4AF37]/10 flex items-center justify-center group-hover:bg-[#D4AF37]/20 transition-colors">
+                    <ClipboardCheck size={18} className="text-[#D4AF37]" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium">Take Exam</div>
+                    <div className="text-xs text-white/50">Enter exam code</div>
+                  </div>
+                </Link>
+              </div>
+            )}
+          </div>
 
           {/* User Profile - Shifted Right with Golden Outline */}
           {!loading && user && (
