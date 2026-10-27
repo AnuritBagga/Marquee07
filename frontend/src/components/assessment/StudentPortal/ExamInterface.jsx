@@ -517,6 +517,7 @@ export default function ExamInterface() {
 function generateMockQuestions(count) {
   const questions = [];
   for (let i = 0; i < count; i++) {
+    const correctIndex = i % 4; // Rotate correct answers
     questions.push({
       id: `q${i + 1}`,
       question_text: `Sample Question ${i + 1}: This is a placeholder question for testing purposes.`,
@@ -527,6 +528,7 @@ function generateMockQuestions(count) {
         `Option C for question ${i + 1}`,
         `Option D for question ${i + 1}`
       ],
+      correct_answer: `Option ${String.fromCharCode(65 + correctIndex)} for question ${i + 1}`, // Store correct answer
       difficulty: ["easy", "medium", "hard"][i % 3],
       marks: i % 3 === 2 ? 3 : i % 3 === 1 ? 2 : 1
     });
