@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Lion from "@/components/brand/Lion";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut, User, ChevronDown, Building2, GraduationCap, UserCircle, ClipboardCheck, BookOpen } from "lucide-react";
+import { LogOut, User, ChevronDown, Building2, GraduationCap, UserCircle, ClipboardCheck, BookOpen, Play } from "lucide-react";
 
 export const Nav = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -187,7 +187,7 @@ export const Nav = () => {
             </button>
             
             {showAssessmentMenu && (
-              <div className="absolute right-0 mt-4 w-64 bg-black/95 border border-[#D4AF37]/30 backdrop-blur-md z-50 shadow-2xl">
+              <div className="absolute right-0 mt-4 w-64 bg-black/95 border border-[#D4AF37]/30 backdrop-blur-md z-50 shadow-2xl rounded-lg overflow-hidden">
                 <Link
                   to="/organization/dashboard"
                   className="flex items-center gap-3 px-4 py-3.5 text-white/90 hover:text-white hover:bg-[#D4AF37]/10 transition-colors border-b border-white/10 group"
@@ -203,7 +203,7 @@ export const Nav = () => {
                 </Link>
                 <Link
                   to="/exam/login"
-                  className="flex items-center gap-3 px-4 py-3.5 text-white/90 hover:text-white hover:bg-[#D4AF37]/10 transition-colors group"
+                  className="flex items-center gap-3 px-4 py-3.5 text-white/90 hover:text-white hover:bg-[#D4AF37]/10 transition-colors border-b border-white/10 group"
                   onClick={() => setShowAssessmentMenu(false)}
                 >
                   <div className="w-9 h-9 rounded-full bg-[#D4AF37]/10 flex items-center justify-center group-hover:bg-[#D4AF37]/20 transition-colors">
@@ -212,6 +212,19 @@ export const Nav = () => {
                   <div>
                     <div className="text-sm font-medium">Take Exam</div>
                     <div className="text-xs text-white/50">Enter exam code</div>
+                  </div>
+                </Link>
+                <Link
+                  to="/exam/demo"
+                  className="flex items-center gap-3 px-4 py-3.5 text-white/90 hover:text-white hover:bg-gradient-to-r hover:from-green-500/10 hover:to-transparent transition-colors group"
+                  onClick={() => setShowAssessmentMenu(false)}
+                >
+                  <div className="w-9 h-9 rounded-full bg-green-500/10 flex items-center justify-center group-hover:bg-green-500/20 transition-colors">
+                    <Play size={18} className="text-green-400" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium">Try Demo Exam</div>
+                    <div className="text-xs text-white/50">No code needed</div>
                   </div>
                 </Link>
               </div>

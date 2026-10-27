@@ -38,6 +38,7 @@ import ExamInstructions from "@/components/assessment/StudentPortal/ExamInstruct
 import ExamInterface from "@/components/assessment/StudentPortal/ExamInterface";
 import OfflineSubmitHandler from "@/components/assessment/StudentPortal/OfflineSubmitHandler";
 import ExamResults from "@/components/assessment/StudentPortal/ExamResults";
+import DemoExam from "@/components/assessment/StudentPortal/DemoExam";
 
 function App() {
   const [intro, setIntro] = useState(false);
@@ -93,6 +94,7 @@ function App() {
 
             {/* Student Exam Portal Routes - Public */}
             <Route path="/exam/login" element={<ExamLogin />} />
+            <Route path="/exam/demo" element={<DemoExam />} />
             <Route path="/exam/system-check" element={<SystemCheck />} />
             <Route path="/exam/instructions" element={<ExamInstructions />} />
             <Route path="/exam/interface" element={<ExamInterface />} />
