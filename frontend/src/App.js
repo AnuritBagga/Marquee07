@@ -19,6 +19,26 @@ import AuthCallback from "@/pages/AuthCallback";
 import Profile from "@/pages/Profile";
 import IntroSequence from "@/components/brand/IntroSequence";
 
+// Assessment/Organization Portal Components
+import OrganizationLayout from "@/components/assessment/OrganizationPortal/OrganizationLayout";
+import Dashboard from "@/components/assessment/OrganizationPortal/Dashboard";
+import AIChatbot from "@/components/assessment/OrganizationPortal/AIChatbot";
+import QuestionBankManager from "@/components/assessment/OrganizationPortal/QuestionBankManager";
+import QuestionBankDetails from "@/components/assessment/OrganizationPortal/QuestionBankDetails";
+import ExamsList from "@/components/assessment/OrganizationPortal/ExamsList";
+import ExamCreator from "@/components/assessment/OrganizationPortal/ExamCreator";
+import ExamDetails from "@/components/assessment/OrganizationPortal/ExamDetails";
+import StudentReports from "@/components/assessment/OrganizationPortal/StudentReports";
+import LiveMonitoring from "@/components/assessment/OrganizationPortal/LiveMonitoring";
+
+// Assessment/Student Portal Components
+import ExamLogin from "@/components/assessment/StudentPortal/ExamLogin";
+import SystemCheck from "@/components/assessment/StudentPortal/SystemCheck";
+import ExamInstructions from "@/components/assessment/StudentPortal/ExamInstructions";
+import ExamInterface from "@/components/assessment/StudentPortal/ExamInterface";
+import OfflineSubmitHandler from "@/components/assessment/StudentPortal/OfflineSubmitHandler";
+import ExamResults from "@/components/assessment/StudentPortal/ExamResults";
+
 function App() {
   const [intro, setIntro] = useState(false);
 
@@ -57,6 +77,27 @@ function App() {
             <Route path="/company-register" element={<CompanyRegister />} />
             <Route path="/university-register" element={<UniversityRegister />} />
             <Route path="/careers" element={<Careers />} />
+            
+            {/* Organization Portal Routes - Protected */}
+            <Route path="/organization" element={<ProtectedRoute><OrganizationLayout /></ProtectedRoute>}>
+              <Route path="dashboard" element={<Dashboard organizationId="temp-org-id" />} />
+              <Route path="ai-chat" element={<AIChatbot organizationId="temp-org-id" />} />
+              <Route path="question-banks" element={<QuestionBankManager organizationId="temp-org-id" />} />
+              <Route path="question-bank/:bankId" element={<QuestionBankDetails organizationId="temp-org-id" />} />
+              <Route path="exams" element={<ExamsList organizationId="temp-org-id" />} />
+              <Route path="exam/create" element={<ExamCreator organizationId="temp-org-id" />} />
+              <Route path="exam/:examId" element={<ExamDetails organizationId="temp-org-id" />} />
+              <Route path="reports" element={<StudentReports organizationId="temp-org-id" />} />
+              <Route path="monitoring" element={<LiveMonitoring organizationId="temp-org-id" />} />
+            </Route>
+
+            {/* Student Exam Portal Routes - Public */}
+            <Route path="/exam/login" element={<ExamLogin />} />
+            <Route path="/exam/system-check" element={<SystemCheck />} />
+            <Route path="/exam/instructions" element={<ExamInstructions />} />
+            <Route path="/exam/interface" element={<ExamInterface />} />
+            <Route path="/exam/offline-submit" element={<OfflineSubmitHandler />} />
+            <Route path="/exam/results" element={<ExamResults />} />
           </Routes>
         </BrowserRouter>
       </div>

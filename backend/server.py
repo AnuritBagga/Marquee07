@@ -1076,7 +1076,10 @@ async def request_access(payload: EmailSignupRequest):
         return {"success": True, "message": "Request received"}
 
 # ============================================
-# ASSESSMENT PLATFORM - Organization Portal
+# ASSESSMENT PLATFORM - Organization Portal & Student Portal
 # ============================================
 from organization_routes import router as organization_router
+from student_routes import router as student_router
+
 app.include_router(organization_router)
+app.include_router(student_router, prefix="/api/student", tags=["student"])
