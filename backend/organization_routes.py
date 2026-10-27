@@ -7,6 +7,7 @@ from fastapi import APIRouter, HTTPException, UploadFile, File, Depends
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel
 from datetime import datetime
+from langchain.schema import HumanMessage, SystemMessage
 import os
 import json
 import pandas as pd
@@ -290,23 +291,57 @@ async def upload_question_bank(
     file: UploadFile = File(...),
     organization_id: str = None,
     subject: str = None,
-    db: Client = Depends(get_supabase_client)
+    db: Client = Depends(get_supabase_client),
+    chatbot: ExamCreatorChatbot = Depends(get_chatbot)
 ):
     """
-    Upload question bank from CSV/Excel file
-    Expected format:
-    question_type, question_text, option_a, option_b, option_c, option_d, correct_answer, difficulty, marks, explanation
+    Upload question bank from CSV/Excel/PDF/Word file
+    For PDF/Word: AI extracts questions using Groq
+    For CSV/Excel: Direct parsing
     """
     try:
-        # Read file
         content = await file.read()
+        questions = []
         
+        # Handle CSV/Excel (structured data)
         if file.filename.endswith('.csv'):
             df = pd.read_csv(pd.io.common.BytesIO(content))
+            questions = parse_structured_questions(df)
+            
         elif file.filename.endswith(('.xlsx', '.xls')):
             df = pd.read_excel(pd.io.common.BytesIO(content))
+            questions = parse_structured_questions(df)
+        
+        # Handle PDF (extract text and use AI)
+        elif file.filename.endswith('.pdf'):
+            import PyPDF2
+            pdf_reader = PyPDF2.PdfReader(pd.io.common.BytesIO(content))
+            text = ""
+            for page in pdf_reader.pages:
+                text += page.extract_text()
+            
+            # Use AI to extract questions from text
+            questions = await extract_questions_from_text(chatbot, text, subject or "General")
+        
+        # Handle Word (extract text and use AI)
+        elif file.filename.endswith(('.docx', '.doc')):
+            import docx2txt
+            text = docx2txt.process(pd.io.common.BytesIO(content))
+            
+            # Use AI to extract questions from text
+            questions = await extract_questions_from_text(chatbot, text, subject or "General")
+        
         else:
-            raise HTTPException(status_code=400, detail="Unsupported file format. Use CSV or Excel.")
+            raise HTTPException(
+                status_code=400, 
+                detail="Unsupported file format. Use CSV, Excel, PDF, or Word."
+            )
+        
+        if not questions:
+            raise HTTPException(
+                status_code=400,
+                detail="No questions could be extracted from the file."
+            )
         
         # Create question bank
         bank_result = db.table("question_banks").insert({
@@ -315,49 +350,109 @@ async def upload_question_bank(
             "description": f"Uploaded from {file.filename}",
             "subject": subject or "General",
             "difficulty": "mixed",
-            "total_questions": len(df),
+            "total_questions": len(questions),
             "created_at": datetime.now().isoformat()
         }).execute()
         
         bank_id = bank_result.data[0]["id"]
         
-        # Parse and insert questions
-        questions = []
-        for _, row in df.iterrows():
-            question = {
-                "question_bank_id": bank_id,
-                "question_type": row.get("question_type", "mcq"),
-                "question_text": row.get("question_text"),
-                "difficulty": row.get("difficulty", "medium"),
-                "marks": float(row.get("marks", 1)),
-                "negative_marks": float(row.get("negative_marks", 0)),
-                "explanation": row.get("explanation", ""),
-                "topic_tags": [row.get("topic", "general")],
-                "created_at": datetime.now().isoformat()
-            }
-            
-            # Add MCQ options
-            if "option_a" in row:
-                question["options"] = [
-                    {"id": "A", "text": row.get("option_a")},
-                    {"id": "B", "text": row.get("option_b")},
-                    {"id": "C", "text": row.get("option_c")},
-                    {"id": "D", "text": row.get("option_d")}
-                ]
-                question["correct_answers"] = [row.get("correct_answer", "A")]
-            
-            questions.append(question)
+        # Insert questions
+        for q in questions:
+            q["question_bank_id"] = bank_id
+            q["created_at"] = datetime.now().isoformat()
         
         db.table("questions").insert(questions).execute()
         
         return {
             "success": True,
             "message": f"Successfully uploaded {len(questions)} questions",
-            "question_bank_id": bank_id
+            "question_bank_id": bank_id,
+            "questions_count": len(questions)
         }
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+def parse_structured_questions(df: pd.DataFrame) -> List[Dict]:
+    """Parse questions from structured CSV/Excel"""
+    questions = []
+    for _, row in df.iterrows():
+        question = {
+            "question_type": row.get("question_type", "mcq"),
+            "question_text": row.get("question_text"),
+            "difficulty": row.get("difficulty", "medium"),
+            "marks": float(row.get("marks", 1)),
+            "negative_marks": float(row.get("negative_marks", 0)),
+            "explanation": row.get("explanation", ""),
+            "topic_tags": [row.get("topic", "general")]
+        }
+        
+        # Add MCQ options
+        if "option_a" in row:
+            question["options"] = [
+                {"id": "A", "text": str(row.get("option_a", ""))},
+                {"id": "B", "text": str(row.get("option_b", ""))},
+                {"id": "C", "text": str(row.get("option_c", ""))},
+                {"id": "D", "text": str(row.get("option_d", ""))}
+            ]
+            question["correct_answers"] = [str(row.get("correct_answer", "A"))]
+        
+        questions.append(question)
+    
+    return questions
+
+async def extract_questions_from_text(
+    chatbot: ExamCreatorChatbot, 
+    text: str, 
+    subject: str
+) -> List[Dict]:
+    """Extract questions from PDF/Word text using AI"""
+    
+    prompt = f"""Extract all questions from this text and convert them to structured format.
+
+Text:
+{text[:4000]}  # Limit to avoid token limit
+
+Subject: {subject}
+
+For each question found, extract:
+- Question text
+- Options (if MCQ)
+- Correct answer
+- Difficulty level (easy/medium/hard)
+- Topic
+
+Return as JSON array:
+[{{
+    "question_type": "mcq",
+    "question_text": "...",
+    "difficulty": "medium",
+    "marks": 1,
+    "negative_marks": 0.25,
+    "options": [{{"id": "A", "text": "..."}}, ...],
+    "correct_answers": ["A"],
+    "explanation": "...",
+    "topic_tags": ["topic1"]
+}}]
+
+If text contains question numbers, remove them. Return ONLY the JSON array."""
+
+    try:
+        response = chatbot.llm.invoke([
+            SystemMessage(content="You are a question extraction expert. Return only valid JSON."),
+            HumanMessage(content=prompt)
+        ])
+        
+        json_str = response.content.strip()
+        if "```" in json_str:
+            json_str = json_str.split("```")[1].replace("json", "").strip()
+        
+        questions_data = json.loads(json_str)
+        return questions_data if isinstance(questions_data, list) else questions_data.get("questions", [])
+        
+    except Exception as e:
+        print(f"Error extracting questions from text: {e}")
+        return []
 
 # ============================================
 # Exam Management
