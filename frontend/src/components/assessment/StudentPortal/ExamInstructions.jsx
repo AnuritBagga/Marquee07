@@ -117,10 +117,11 @@ export default function ExamInstructions() {
                       This exam must be taken offline. Please follow these steps:
                     </p>
                     <ol className="text-white/80 text-sm space-y-2 ml-4">
-                      <li>1. Turn off your WiFi or disconnect ethernet cable</li>
-                      <li>2. Disable mobile data on your device</li>
-                      <li>3. Wait for the green "Offline Mode Ready" message</li>
-                      <li>4. Click "Start Exam"</li>
+                      <li>1. <strong>For Testing:</strong> Open DevTools (Press F12)</li>
+                      <li>2. Go to <strong>Network</strong> tab</li>
+                      <li>3. Change dropdown from "No throttling" to <strong>"Offline"</strong></li>
+                      <li>4. Wait for green message above</li>
+                      <li className="text-yellow-300">📱 <strong>On Real Devices:</strong> Turn off WiFi/Mobile Data</li>
                     </ol>
                   </>
                 )}

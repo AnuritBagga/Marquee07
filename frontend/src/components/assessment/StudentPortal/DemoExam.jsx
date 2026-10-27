@@ -31,7 +31,7 @@ export default function DemoExam() {
         shuffle_options: true,
         negative_marking: false,
         show_results_immediately: true,
-        offline_mode_enabled: true // Changed to true so it asks to turn off internet
+        offline_mode_enabled: false // Keep false for demo - simpler UX
       }
     };
 
