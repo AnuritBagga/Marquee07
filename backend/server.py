@@ -1074,3 +1074,9 @@ async def request_access(payload: EmailSignupRequest):
         logger.exception(f"Failed to send access request emails: {e}")
         # Still return success to user even if email fails
         return {"success": True, "message": "Request received"}
+
+# ============================================
+# ASSESSMENT PLATFORM - Organization Portal
+# ============================================
+from organization_routes import router as organization_router
+app.include_router(organization_router)
