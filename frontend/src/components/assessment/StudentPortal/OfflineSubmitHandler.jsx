@@ -60,53 +60,62 @@ export default function OfflineSubmitHandler() {
 
       console.log("Submitting to server:", submission);
 
-      // Use Vercel API route (same domain)
+      // Try multiple API endpoints (for compatibility)
       const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
-      const apiUrl = backendUrl ? `${backendUrl}/api/student/exam/submit` : '/api/student/exam/submit';
+      const apiUrls = [
+        backendUrl ? `${backendUrl}/api/submit-exam` : '/api/submit-exam',
+        backendUrl ? `${backendUrl}/api/student/exam/submit` : '/api/student/exam/submit'
+      ];
       
-      console.log("API URL:", apiUrl);
+      console.log("Trying API URLs:", apiUrls);
       
-      try {
-        const response = await axios.post(
-          apiUrl,
-          submission,
-          {
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            timeout: 30000 // 30 second timeout
-          }
-        );
-
-        console.log("Server response:", response.data);
-
-        if (response.data && response.data.success) {
-          // Success! Clear pending and move to regular submission
-          localStorage.setItem(`exam_${examId}_submission`, JSON.stringify(submission));
-          localStorage.removeItem(`exam_${examId}_pendingSubmission`);
+      let response = null;
+      let lastError = null;
+      
+      // Try each URL until one works
+      for (const apiUrl of apiUrls) {
+        try {
+          console.log(`Attempting: ${apiUrl}`);
           
-          // Navigate to results
-          setTimeout(() => {
-            navigate("/exam/results", { replace: true });
-          }, 500);
-        } else {
-          throw new Error(response.data?.message || "Submission failed");
+          response = await axios.post(
+            apiUrl,
+            submission,
+            {
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              timeout: 30000
+            }
+          );
+          
+          console.log(`✅ Success with: ${apiUrl}`);
+          break; // Success! Exit loop
+          
+        } catch (err) {
+          console.log(`❌ Failed with: ${apiUrl}`, err.message);
+          lastError = err;
+          // Continue to next URL
         }
-      } catch (apiError) {
-        console.error("Backend API error:", apiError);
+      }
+      
+      // Check if any URL succeeded
+      if (!response) {
+        throw lastError || new Error("All API endpoints failed");
+      }
+
+      console.log("Server response:", response.data);
+
+      if (response.data && response.data.success) {
+        // Success! Clear pending and move to regular submission
+        localStorage.setItem(`exam_${examId}_submission`, JSON.stringify(submission));
+        localStorage.removeItem(`exam_${examId}_pendingSubmission`);
         
-        // Check if it's a network error or server error
-        if (apiError.code === 'ECONNABORTED' || apiError.message.includes('timeout')) {
-          throw new Error("Request timed out. Please check your connection and try again.");
-        } else if (apiError.response) {
-          // Server responded with error
-          throw new Error(`Server error: ${apiError.response.status}. ${apiError.response.data?.message || ''}`);
-        } else if (apiError.request) {
-          // Request made but no response
-          throw new Error("No response from server. Please check if the backend is running.");
-        } else {
-          throw new Error(apiError.message || "Unknown error occurred");
-        }
+        // Navigate to results
+        setTimeout(() => {
+          navigate("/exam/results", { replace: true });
+        }, 500);
+      } else {
+        throw new Error(response.data?.message || "Submission failed");
       }
     } catch (error) {
       console.error("Submission error:", error);

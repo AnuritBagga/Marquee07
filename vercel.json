@@ -2,18 +2,22 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/index.py",
+      "src": "api/submit-exam.py",
       "use": "@vercel/python"
     },
     {
-      "src": "api/student/exam/submit.py",
+      "src": "api/index.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
+      "src": "/api/submit-exam",
+      "dest": "/api/submit-exam.py"
+    },
+    {
       "src": "/api/student/exam/submit",
-      "dest": "/api/student/exam/submit.py"
+      "dest": "/api/submit-exam.py"
     },
     {
       "src": "/api/(.*)",
