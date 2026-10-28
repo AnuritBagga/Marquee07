@@ -39,7 +39,7 @@ import ExamInterface from "@/components/assessment/StudentPortal/ExamInterface";
 import OfflineSubmitHandler from "@/components/assessment/StudentPortal/OfflineSubmitHandler";
 import ExamResults from "@/components/assessment/StudentPortal/ExamResults";
 import DemoExam from "@/components/assessment/StudentPortal/DemoExam";
-import ClearExamData from "@/components/assessment/ClearExamData";
+import ClearExamData from "@/components/assessment/StudentPortal/ClearExamData";
 
 function App() {
   const [intro, setIntro] = useState(false);
