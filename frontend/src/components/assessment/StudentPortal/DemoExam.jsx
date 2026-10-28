@@ -42,6 +42,17 @@ export default function DemoExam() {
           }
         };
 
+        setStatus("Clearing old exam data...");
+        
+        // IMPORTANT: Clear any previous exam data to prevent conflicts
+        const examId = demoSession.examId;
+        localStorage.removeItem(`exam_${examId}_questions`);
+        localStorage.removeItem(`exam_${examId}_answers`);
+        localStorage.removeItem(`exam_${examId}_submission`); // Clear old submission!
+        localStorage.removeItem(`exam_${examId}_violations`);
+        localStorage.removeItem(`exam_${examId}_pendingSubmission`);
+        console.log("✅ Cleared old exam data");
+
         setStatus("Saving data for offline use...");
 
         // Save to localStorage
@@ -79,11 +90,8 @@ export default function DemoExam() {
       <div className="text-center">
         <div className="w-16 h-16 border-4 border-[#D4AF37]/20 border-t-[#D4AF37] rounded-full animate-spin mx-auto mb-4"></div>
         <p className="text-white/60 mb-2">{status}</p>
-        <p className="text-white/40 text-sm">Setting up offline exam support...</p>
+        <p className="text-white/40 text-sm">Clearing old data & setting up fresh exam...</p>
       </div>
-    </div>
-  );
-}
     </div>
   );
 }
