@@ -233,19 +233,17 @@ export default function ExamInterface() {
       // Exit fullscreen
       await exitFullscreen();
 
-      // Check if offline
-      const isReallyOffline = !navigator.onLine;
+      // For offline-enabled exams, ALWAYS require internet connection for submission
       const isOfflineExam = examSession?.examData?.offline_mode_enabled;
 
-      if (isReallyOffline && isOfflineExam) {
-        console.log("Offline mode - need to turn on internet for submission");
-        // Store for later sync - must turn internet ON to submit
+      if (isOfflineExam) {
+        console.log("Offline exam - redirecting to submission page (requires internet ON)");
+        // Store for pending submission - will require internet to be ON
         localStorage.setItem(`exam_${examId}_pendingSubmission`, JSON.stringify(submission));
         navigate("/exam/offline-submit", { replace: true });
       } else {
-        console.log("Online mode - submitting to server");
-        // Online - submit to server
-        // Wait a bit to ensure localStorage is written
+        console.log("Online exam - navigating to results");
+        // Regular online exam - go directly to results
         setTimeout(() => {
           navigate("/exam/results", { replace: true });
         }, 100);
