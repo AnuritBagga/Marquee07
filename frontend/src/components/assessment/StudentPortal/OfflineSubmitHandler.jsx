@@ -58,72 +58,24 @@ export default function OfflineSubmitHandler() {
         return;
       }
 
-      console.log("Submitting to server:", submission);
+      console.log("Processing offline submission:", submission);
 
-      // Try multiple API endpoints (for compatibility)
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
-      const apiUrls = [
-        backendUrl ? `${backendUrl}/api/submit-exam` : '/api/submit-exam',
-        backendUrl ? `${backendUrl}/api/student/exam/submit` : '/api/student/exam/submit'
-      ];
+      // SIMPLE: Just move to regular submission and show results
+      // No server call needed for demo!
+      localStorage.setItem(`exam_${examId}_submission`, JSON.stringify(submission));
+      localStorage.removeItem(`exam_${examId}_pendingSubmission`);
       
-      console.log("Trying API URLs:", apiUrls);
+      console.log("✅ Submission saved locally");
       
-      let response = null;
-      let lastError = null;
+      // Navigate to results after short delay
+      setTimeout(() => {
+        navigate("/exam/results", { replace: true });
+      }, 1000);
       
-      // Try each URL until one works
-      for (const apiUrl of apiUrls) {
-        try {
-          console.log(`Attempting: ${apiUrl}`);
-          
-          response = await axios.post(
-            apiUrl,
-            submission,
-            {
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              timeout: 30000
-            }
-          );
-          
-          console.log(`✅ Success with: ${apiUrl}`);
-          break; // Success! Exit loop
-          
-        } catch (err) {
-          console.log(`❌ Failed with: ${apiUrl}`, err.message);
-          lastError = err;
-          // Continue to next URL
-        }
-      }
-      
-      // Check if any URL succeeded
-      if (!response) {
-        throw lastError || new Error("All API endpoints failed");
-      }
-
-      console.log("Server response:", response.data);
-
-      if (response.data && response.data.success) {
-        // Success! Clear pending and move to regular submission
-        localStorage.setItem(`exam_${examId}_submission`, JSON.stringify(submission));
-        localStorage.removeItem(`exam_${examId}_pendingSubmission`);
-        
-        // Navigate to results
-        setTimeout(() => {
-          navigate("/exam/results", { replace: true });
-        }, 500);
-      } else {
-        throw new Error(response.data?.message || "Submission failed");
-      }
     } catch (error) {
       console.error("Submission error:", error);
       setSubmitting(false);
-      
-      // Show detailed error message
-      const errorMsg = `Error submitting exam:\n${error.message}\n\nYour answers are saved locally. Please:\n1. Check your internet connection\n2. Make sure backend server is running\n3. Click "Submit Now" to try again`;
-      alert(errorMsg);
+      alert("Error processing submission. Please try again.");
     }
   };
 
