@@ -100,19 +100,12 @@ export const Hero = () => {
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 mt-10 sm:mt-14">
             <Link
-              to="/practice"
+              to="/select-mode"
               data-testid="hero-cta-primary"
-              className="btn-royal bg-[#D4AF37] text-black px-6 sm:px-8 py-3.5 sm:py-4 text-[10px] sm:text-[11px] uppercase tracking-[0.25em] sm:tracking-[0.3em] hover:bg-white transition-colors duration-500 text-center whitespace-nowrap font-semibold"
+              className="btn-royal bg-[#D4AF37] text-black px-8 sm:px-12 py-4 sm:py-5 text-[11px] sm:text-[12px] uppercase tracking-[0.25em] sm:tracking-[0.3em] hover:bg-white transition-all duration-500 text-center whitespace-nowrap font-bold shadow-lg shadow-[#D4AF37]/30 hover:shadow-xl hover:shadow-white/40 hover:scale-105"
             >
-              Start Your Practice
+              Get Started
             </Link>
-            <a
-              href="#method"
-              data-testid="hero-cta-secondary"
-              className="hairline-strong px-6 sm:px-8 py-3.5 sm:py-4 text-[10px] sm:text-[11px] uppercase tracking-[0.25em] sm:tracking-[0.3em] text-white hover:bg-white hover:text-black transition-colors duration-500 text-center whitespace-nowrap font-semibold"
-            >
-              See the Method
-            </a>
           </div>
         </motion.div>
       </motion.div>

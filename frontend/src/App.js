@@ -5,6 +5,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import Landing from "@/pages/Landing";
 import Practice from "@/pages/Practice";
+import SelectMode from "@/pages/SelectMode";
 import InterviewMode from "@/pages/InterviewMode";
 import PracticeSetup from "@/pages/PracticeSetup";
 import PracticeSession from "@/pages/PracticeSession";
@@ -63,6 +64,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Landing />} />
+            <Route path="/select-mode" element={<SelectMode />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
