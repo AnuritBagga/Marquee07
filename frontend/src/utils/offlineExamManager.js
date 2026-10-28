@@ -50,25 +50,28 @@ class OfflineExamManager {
    * Check if REALLY offline (not just DevTools)
    */
   async checkRealOfflineStatus() {
-    // First check navigator
-    if (navigator.onLine) {
-      return { isOffline: false, method: 'navigator.onLine' };
-    }
-
-    // Double-check with actual network request
+    console.log("🔍 Checking offline status...");
+    console.log("navigator.onLine:", navigator.onLine);
+    
+    // Try to make an actual network request
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2000);
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
 
-      await fetch('https://www.google.com/favicon.ico', {
+      const response = await fetch('https://www.google.com/favicon.ico', {
         mode: 'no-cors',
         cache: 'no-store',
         signal: controller.signal
       });
 
       clearTimeout(timeoutId);
+      console.log("✅ Network request succeeded - ONLINE");
       return { isOffline: false, method: 'network-request-success' };
     } catch (error) {
+      console.log("❌ Network request failed - OFFLINE");
+      console.log("Error:", error.message);
+      
+      // If fetch failed, we're truly offline
       return { isOffline: true, method: 'network-request-failed', error: error.message };
     }
   }

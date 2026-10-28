@@ -140,6 +140,14 @@ export default function ExamInstructions() {
                 <h3 className={`font-bold mb-2 ${offlineStatus.isOffline ? "text-green-400" : "text-yellow-400"}`}>
                   {offlineStatus.checking ? "Checking Connection..." : offlineStatus.isOffline ? "✅ Offline Mode Ready - WiFi is OFF" : "⚠️ Offline Mode Required - WiFi is ON"}
                 </h3>
+                
+                {/* Debug Info */}
+                <div className="mb-2 p-2 bg-black/30 rounded text-xs font-mono">
+                  <p className="text-white/60">Debug: navigator.onLine = {navigator.onLine ? "true" : "false"}</p>
+                  <p className="text-white/60">Status: {offlineStatus.isOffline ? "OFFLINE ✓" : "ONLINE ✗"}</p>
+                  {offlineStatus.method && <p className="text-white/60">Method: {offlineStatus.method}</p>}
+                </div>
+                
                 {offlineStatus.isOffline ? (
                   <p className="text-white/80 text-sm">
                     Your internet is off. You can now start the exam. Your answers will be saved locally and submitted when you turn internet back on.
