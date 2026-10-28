@@ -53,15 +53,23 @@ class OfflineExamManager {
     console.log("🔍 Checking offline status...");
     console.log("navigator.onLine:", navigator.onLine);
     
-    // Try to make an actual network request
+    // IMPORTANT: Use timestamp to prevent Service Worker caching
+    const timestamp = Date.now();
+    const testUrl = `https://www.google.com/favicon.ico?t=${timestamp}`;
+    
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 3000);
 
-      const response = await fetch('https://www.google.com/favicon.ico', {
+      const response = await fetch(testUrl, {
         mode: 'no-cors',
         cache: 'no-store',
-        signal: controller.signal
+        signal: controller.signal,
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
       });
 
       clearTimeout(timeoutId);
@@ -70,6 +78,12 @@ class OfflineExamManager {
     } catch (error) {
       console.log("❌ Network request failed - OFFLINE");
       console.log("Error:", error.message);
+      
+      // Double-check: if navigator says offline too, definitely offline
+      if (!navigator.onLine) {
+        console.log("✅ Confirmed offline (navigator.onLine also false)");
+        return { isOffline: true, method: 'network-request-failed-confirmed', error: error.message };
+      }
       
       // If fetch failed, we're truly offline
       return { isOffline: true, method: 'network-request-failed', error: error.message };

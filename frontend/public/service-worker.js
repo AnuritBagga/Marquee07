@@ -24,6 +24,13 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // IMPORTANT: Don't cache google.com requests (used for offline detection)
+  if (event.request.url.includes('google.com')) {
+    console.log('[SW] Skipping cache for offline detection:', event.request.url);
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
   event.respondWith(
     caches.open(CACHE_NAME).then((cache) => {
       return fetch(event.request)
