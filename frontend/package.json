@@ -71,7 +71,9 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
-    "vercel-build": "craco build"
+    "vercel-build": "craco build",
+    "serve-prod": "npx serve -s build -p 3000",
+    "build-and-serve": "npm run build && npm run serve-prod"
   },
   "browserslist": {
     "production": [

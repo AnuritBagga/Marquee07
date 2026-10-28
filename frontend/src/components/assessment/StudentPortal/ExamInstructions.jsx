@@ -1,14 +1,20 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import offlineExamManager from "../../../utils/offlineExamManager";
 
 /**
  * ExamInstructions - Display exam rules and requirements
+ * Now with REAL offline detection - not just DevTools
  */
 export default function ExamInstructions() {
   const navigate = useNavigate();
   const [examSession, setExamSession] = useState(null);
   const [agreed, setAgreed] = useState(false);
-  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const [offlineStatus, setOfflineStatus] = useState({
+    isOffline: !navigator.onLine,
+    checking: false,
+    verified: false
+  });
 
   useEffect(() => {
     // Load exam session from localStorage
@@ -20,27 +26,54 @@ export default function ExamInstructions() {
     setExamSession(session);
 
     // Monitor online/offline status
-    const handleOnline = () => setIsOffline(false);
-    const handleOffline = () => setIsOffline(true);
+    const checkOfflineStatus = async () => {
+      setOfflineStatus(prev => ({ ...prev, checking: true }));
+      const status = await offlineExamManager.checkRealOfflineStatus();
+      setOfflineStatus({
+        isOffline: status.isOffline,
+        checking: false,
+        verified: true,
+        method: status.method
+      });
+    };
+
+    checkOfflineStatus();
+    
+    const handleOnline = () => checkOfflineStatus();
+    const handleOffline = () => checkOfflineStatus();
     
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
 
+    // Re-check every 3 seconds
+    const interval = setInterval(checkOfflineStatus, 3000);
+
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
+      clearInterval(interval);
     };
   }, [navigate]);
 
-  const handleStartExam = () => {
+  const handleStartExam = async () => {
     if (!agreed) {
       alert("Please agree to the exam rules before starting");
       return;
     }
 
-    // For offline exams, check if internet is off
-    if (examSession?.examData?.offline_mode_enabled && !isOffline) {
-      if (!confirm("This exam requires offline mode. Please turn off your internet connection and click OK to continue.")) {
+    // For offline exams, MUST be offline
+    if (examSession?.examData?.offline_mode_enabled) {
+      // Re-verify offline status
+      setOfflineStatus(prev => ({ ...prev, checking: true }));
+      const status = await offlineExamManager.checkRealOfflineStatus();
+      setOfflineStatus({
+        isOffline: status.isOffline,
+        checking: false,
+        verified: true
+      });
+
+      if (!status.isOffline) {
+        alert("❌ EXAM BLOCKED\n\nThis exam requires your laptop WiFi to be completely OFF.\n\nPlease:\n1. Go to Windows Settings\n2. Turn OFF WiFi\n3. Come back to this page\n4. Wait for green 'Offline Mode Ready' message\n5. Then click Start Exam");
         return;
       }
     }
@@ -95,34 +128,49 @@ export default function ExamInstructions() {
         {/* Offline Mode Alert */}
         {examData.offline_mode_enabled && (
           <div className={`border rounded-xl p-6 mb-8 ${
-            isOffline
+            offlineStatus.isOffline
               ? "bg-green-500/10 border-green-500/30"
               : "bg-yellow-500/10 border-yellow-500/30"
           }`}>
             <div className="flex items-start gap-4">
               <div className="text-3xl">
-                {isOffline ? "✅" : "⚠️"}
+                {offlineStatus.checking ? "🔄" : offlineStatus.isOffline ? "✅" : "⚠️"}
               </div>
               <div className="flex-1">
-                <h3 className={`font-bold mb-2 ${isOffline ? "text-green-400" : "text-yellow-400"}`}>
-                  {isOffline ? "Offline Mode Ready" : "Offline Mode Required"}
+                <h3 className={`font-bold mb-2 ${offlineStatus.isOffline ? "text-green-400" : "text-yellow-400"}`}>
+                  {offlineStatus.checking ? "Checking Connection..." : offlineStatus.isOffline ? "✅ Offline Mode Ready - WiFi is OFF" : "⚠️ Offline Mode Required - WiFi is ON"}
                 </h3>
-                {isOffline ? (
+                {offlineStatus.isOffline ? (
                   <p className="text-white/80 text-sm">
                     Your internet is off. You can now start the exam. Your answers will be saved locally and submitted when you turn internet back on.
                   </p>
                 ) : (
                   <>
                     <p className="text-white/80 text-sm mb-3">
-                      This exam must be taken offline. Please follow these steps:
+                      This exam must be taken offline to ensure exam integrity.
                     </p>
+                    <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-3">
+                      <p className="text-red-300 font-bold text-sm mb-2">⚠️ TURN OFF YOUR LAPTOP WiFi COMPLETELY</p>
+                      <p className="text-red-200 text-xs">Not browser offline mode - REAL WiFi OFF!</p>
+                    </div>
                     <ol className="text-white/80 text-sm space-y-2 ml-4">
-                      <li>1. <strong>For Testing:</strong> Open DevTools (Press F12)</li>
-                      <li>2. Go to <strong>Network</strong> tab</li>
-                      <li>3. Change dropdown from "No throttling" to <strong>"Offline"</strong></li>
-                      <li>4. Wait for green message above</li>
-                      <li className="text-yellow-300">📱 <strong>On Real Devices:</strong> Turn off WiFi/Mobile Data</li>
+                      <li><strong>Windows:</strong> Settings → Network & Internet → WiFi → Turn OFF</li>
+                      <li><strong>Mac:</strong> Click WiFi icon → Turn WiFi Off</li>
+                      <li><strong>Or:</strong> Disable network adapter completely</li>
+                      <li>Come back to this page (don't close tab!)</li>
+                      <li>Wait for green "Offline Mode Ready" message</li>
+                      <li>Then click "Start Exam"</li>
                     </ol>
+                    <div className="mt-3 bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+                      <p className="text-blue-300 text-xs">
+                        <strong>Why?</strong> With WiFi OFF, you cannot use Google, ChatGPT, or any online resources. This ensures a fair exam for everyone.
+                      </p>
+                    </div>
+                    <div className="mt-2 bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
+                      <p className="text-yellow-300 text-xs">
+                        <strong>Testing?</strong> If using development mode (npm start), you need production build (npm run build) for true offline mode. See REAL_OFFLINE_MODE_SOLUTION.md
+                      </p>
+                    </div>
                   </>
                 )}
               </div>
@@ -295,12 +343,16 @@ export default function ExamInstructions() {
           </button>
           <button
             onClick={handleStartExam}
-            disabled={!agreed || (examData.offline_mode_enabled && !isOffline)}
+            disabled={!agreed || (examData.offline_mode_enabled && !offlineStatus.isOffline)}
             className="flex-1 bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-black px-6 py-4 rounded-lg transition-colors font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {examData.offline_mode_enabled && !isOffline ? (
+            {examData.offline_mode_enabled && !offlineStatus.isOffline ? (
               <>
-                ⚠️ Turn Off Internet First
+                ⚠️ Turn Off WiFi First
+              </>
+            ) : offlineStatus.checking ? (
+              <>
+                🔄 Checking Connection...
               </>
             ) : (
               <>
