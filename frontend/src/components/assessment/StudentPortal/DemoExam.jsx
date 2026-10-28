@@ -44,16 +44,22 @@ export default function DemoExam() {
 
         setStatus("Clearing old exam data...");
         
-        // IMPORTANT: Clear any previous exam data to prevent conflicts
+        // CRITICAL: Clear ALL old exam data before starting new exam
         const examId = demoSession.examId;
+        
+        // Clear everything related to this exam
         localStorage.removeItem(`exam_${examId}_questions`);
         localStorage.removeItem(`exam_${examId}_answers`);
-        localStorage.removeItem(`exam_${examId}_submission`); // Clear old submission!
+        localStorage.removeItem(`exam_${examId}_submission`); // OLD SUBMISSION
+        localStorage.removeItem(`exam_${examId}_pendingSubmission`); // PENDING
         localStorage.removeItem(`exam_${examId}_violations`);
-        localStorage.removeItem(`exam_${examId}_pendingSubmission`);
-        console.log("✅ Cleared old exam data");
+        
+        // Also clear any generic exam data
+        localStorage.removeItem('examAgreedAt');
+        
+        console.log("✅ Cleared all old exam data for:", examId);
 
-        setStatus("Saving data for offline use...");
+        setStatus("Saving fresh exam data...");
 
         // Save to localStorage
         localStorage.setItem("examSession", JSON.stringify(demoSession));

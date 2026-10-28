@@ -214,11 +214,10 @@ export default function ExamInterface() {
         submittedAt: new Date().toISOString()
       };
 
-      console.log("Submitting exam:", submission);
+      console.log("💾 Saving exam submission to localStorage:", submission);
 
       // Save submission to localStorage
       localStorage.setItem(`exam_${examId}_submission`, JSON.stringify(submission));
-      console.log("✅ Submission saved to localStorage");
       
       // Verify it was saved
       const verifySubmission = localStorage.getItem(`exam_${examId}_submission`);
@@ -228,30 +227,56 @@ export default function ExamInterface() {
         setIsSubmitting(false);
         return;
       }
-      console.log("✅ Submission verified in localStorage");
+      console.log("✅ Submission saved to localStorage successfully");
 
       // Exit fullscreen
       await exitFullscreen();
 
-      // For offline-enabled exams, ALWAYS require internet connection for submission
+      // For offline-enabled exams, check internet connection before showing results
       const isOfflineExam = examSession?.examData?.offline_mode_enabled;
 
       if (isOfflineExam) {
-        console.log("Offline exam - redirecting to submission page (requires internet ON)");
-        // Store for pending submission - will require internet to be ON
-        localStorage.setItem(`exam_${examId}_pendingSubmission`, JSON.stringify(submission));
-        navigate("/exam/offline-submit", { replace: true });
-      } else {
-        console.log("Online exam - navigating to results");
-        // Regular online exam - go directly to results
-        setTimeout(() => {
+        console.log("🔒 Offline exam - checking internet connection...");
+        
+        // Check if internet is ON
+        const isOnline = await checkInternetConnection();
+        
+        if (!isOnline) {
+          console.log("❌ No internet - redirecting to offline submit page");
+          navigate("/exam/offline-submit", { replace: true });
+        } else {
+          console.log("✅ Internet is ON - showing results");
           navigate("/exam/results", { replace: true });
-        }, 100);
+        }
+      } else {
+        console.log("📊 Regular exam - showing results");
+        navigate("/exam/results", { replace: true });
       }
     } catch (error) {
       console.error("Submission error:", error);
       alert("Error submitting exam: " + error.message);
       setIsSubmitting(false);
+    }
+  };
+
+  // Check internet connection using real fetch test
+  const checkInternetConnection = async () => {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 3000);
+      
+      const response = await fetch(`https://www.google.com/favicon.ico?${Date.now()}`, {
+        method: 'HEAD',
+        mode: 'no-cors',
+        cache: 'no-cache',
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeout);
+      return true;
+    } catch (error) {
+      console.log("Internet check failed:", error.message);
+      return false;
     }
   };
 

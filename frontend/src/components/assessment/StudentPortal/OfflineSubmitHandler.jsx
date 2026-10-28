@@ -1,90 +1,71 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 /**
  * OfflineSubmitHandler - Handle exam submission when internet is required
+ * SIMPLE VERSION: Just check internet, then show results from localStorage
  */
 export default function OfflineSubmitHandler() {
   const navigate = useNavigate();
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [submitting, setSubmitting] = useState(false);
+  const [isOnline, setIsOnline] = useState(false);
+  const [checking, setChecking] = useState(true);
   const [examSession, setExamSession] = useState(null);
 
   useEffect(() => {
     // Load exam session
     const session = JSON.parse(localStorage.getItem("examSession"));
     if (!session) {
-      navigate("/exam/login");
+      console.log("No exam session - redirecting to login");
+      navigate("/exam/login", { replace: true });
       return;
     }
     setExamSession(session);
 
-    // Monitor online status
-    const handleOnline = () => {
-      setIsOnline(true);
-      // Auto-submit when connection is restored
-      setTimeout(() => submitPendingExam(session), 1000);
-    };
-    
-    const handleOffline = () => setIsOnline(false);
+    // Initial internet check
+    checkInternet();
 
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
+    // Set up interval to continuously check internet
+    const intervalId = setInterval(checkInternet, 2000);
 
     return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
+      clearInterval(intervalId);
     };
   }, [navigate]);
 
-  const submitPendingExam = async (session) => {
-    setSubmitting(true);
-
+  const checkInternet = async () => {
     try {
-      const examId = session.examId;
-      const submission = JSON.parse(localStorage.getItem(`exam_${examId}_pendingSubmission`));
-
-      if (!submission) {
-        console.warn("No pending submission found, checking regular submission");
-        const regularSubmission = localStorage.getItem(`exam_${examId}_submission`);
-        if (regularSubmission) {
-          console.log("Found regular submission, navigating to results");
-          navigate("/exam/results", { replace: true });
-          return;
-        }
-        alert("No submission found. Please take the exam again.");
-        navigate("/", { replace: true });
-        return;
-      }
-
-      console.log("Processing offline submission:", submission);
-
-      // SIMPLE: Just move to regular submission and show results
-      // No server call needed for demo!
-      localStorage.setItem(`exam_${examId}_submission`, JSON.stringify(submission));
-      localStorage.removeItem(`exam_${examId}_pendingSubmission`);
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 3000);
       
-      console.log("✅ Submission saved locally");
+      await fetch(`https://www.google.com/favicon.ico?${Date.now()}`, {
+        method: 'HEAD',
+        mode: 'no-cors',
+        cache: 'no-cache',
+        signal: controller.signal
+      });
       
-      // Navigate to results after short delay
+      clearTimeout(timeout);
+      
+      // Internet is ON!
+      setIsOnline(true);
+      setChecking(false);
+      
+      // Auto-navigate to results after 1 second
       setTimeout(() => {
+        console.log("✅ Internet is ON - navigating to results");
         navigate("/exam/results", { replace: true });
-      }, 1000);
+      }, 1500);
       
     } catch (error) {
-      console.error("Submission error:", error);
-      setSubmitting(false);
-      alert("Error processing submission. Please try again.");
+      // Still offline
+      setIsOnline(false);
+      setChecking(false);
     }
   };
 
-  const handleManualSubmit = () => {
-    if (!isOnline) {
-      alert("Please connect to the internet first");
-      return;
-    }
-    submitPendingExam(examSession);
+  const handleManualCheck = () => {
+    setChecking(true);
+    checkInternet();
   };
 
   return (
@@ -93,35 +74,27 @@ export default function OfflineSubmitHandler() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 ${
-            isOnline ? "bg-green-500/20" : "bg-yellow-500/20"
+            isOnline ? "bg-green-500/20 animate-bounce" : "bg-yellow-500/20"
           }`}>
-            <span className="text-5xl">{isOnline ? "🌐" : "📡"}</span>
+            <span className="text-5xl">{isOnline ? "✅" : "📡"}</span>
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">
-            {submitting ? "Submitting Exam..." : isOnline ? "Internet Connected!" : "Connect to Internet"}
+            {isOnline ? "Internet Connected!" : "Connect to Internet"}
           </h1>
           <p className="text-white/60">
-            {submitting
-              ? "Please wait while we submit your exam"
-              : isOnline
-              ? "Your exam is being submitted automatically"
-              : "Turn on your internet connection to submit your exam"}
+            {isOnline
+              ? "Loading your results..."
+              : "Turn on your internet to view exam results"}
           </p>
         </div>
 
         {/* Status Card */}
         <div className="bg-[#0A0A0A] border border-white/10 rounded-xl p-8 mb-6">
-          {submitting ? (
+          {isOnline ? (
             <div className="text-center">
               <div className="w-16 h-16 border-4 border-[#D4AF37]/20 border-t-[#D4AF37] rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-white font-semibold mb-2">Submitting your exam...</p>
-              <p className="text-white/60 text-sm">This may take a few moments</p>
-            </div>
-          ) : isOnline ? (
-            <div className="text-center">
-              <div className="text-5xl mb-4">✅</div>
-              <p className="text-white font-semibold mb-2">Connection Established</p>
-              <p className="text-white/60 text-sm">Your exam will be submitted automatically</p>
+              <p className="text-white font-semibold mb-2">Preparing Results...</p>
+              <p className="text-white/60 text-sm">Your answers are safe</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -136,14 +109,14 @@ export default function OfflineSubmitHandler() {
                 <span className="text-xl">🔄</span>
                 <div>
                   <p className="text-white font-semibold mb-1">Automatic Detection</p>
-                  <p className="text-white/60 text-sm">We'll detect when you're back online</p>
+                  <p className="text-white/60 text-sm">We'll detect when you're online</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <span className="text-xl">💾</span>
                 <div>
                   <p className="text-white font-semibold mb-1">Your Answers Are Safe</p>
-                  <p className="text-white/60 text-sm">All answers saved locally</p>
+                  <p className="text-white/60 text-sm">Saved locally on your device</p>
                 </div>
               </div>
             </div>
@@ -158,26 +131,26 @@ export default function OfflineSubmitHandler() {
         }`}>
           <div className="flex items-center gap-3">
             <div className={`w-3 h-3 rounded-full ${
-              isOnline ? "bg-green-400 animate-pulse" : "bg-yellow-400"
+              isOnline ? "bg-green-400 animate-pulse" : "bg-yellow-400 animate-pulse"
             }`}></div>
             <p className={`font-semibold text-sm ${
               isOnline ? "text-green-400" : "text-yellow-400"
             }`}>
-              {isOnline ? "Online" : "Offline"}
+              {checking ? "Checking..." : isOnline ? "Online" : "Offline"}
             </p>
           </div>
         </div>
 
-        {/* Manual Submit Button */}
-        {isOnline && !submitting && (
+        {/* Manual Check Button */}
+        {!isOnline && !checking && (
           <button
-            onClick={handleManualSubmit}
+            onClick={handleManualCheck}
             className="w-full bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-black px-6 py-4 rounded-lg transition-colors font-bold text-lg flex items-center justify-center gap-2"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            Submit Now
+            Check Again
           </button>
         )}
 
@@ -185,8 +158,8 @@ export default function OfflineSubmitHandler() {
         <div className="mt-6 text-center">
           <p className="text-white/40 text-sm">
             {isOnline
-              ? "If submission doesn't start automatically, use the button above"
-              : "Waiting for internet connection..."}
+              ? "Redirecting to results page..."
+              : "Your exam is complete. Connect to internet to see results."}
           </p>
         </div>
       </div>

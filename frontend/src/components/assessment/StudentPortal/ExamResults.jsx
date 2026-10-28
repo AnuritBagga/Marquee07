@@ -20,8 +20,7 @@ export default function ExamResults() {
       // Load exam session
       const session = JSON.parse(localStorage.getItem("examSession"));
       if (!session) {
-        console.error("No exam session found");
-        // Don't show error - just redirect silently
+        console.log("❌ No exam session found - redirecting silently");
         navigate("/", { replace: true });
         return;
       }
@@ -32,23 +31,20 @@ export default function ExamResults() {
       const sub = JSON.parse(localStorage.getItem(`exam_${examId}_submission`));
       
       if (!sub) {
-        console.error("No submission found for exam:", examId);
-        
-        // IMPORTANT: Don't show error alert - it's annoying!
-        // Instead, redirect back to start
+        console.log("❌ No submission found for exam:", examId);
         console.log("Redirecting to home - no submission exists yet");
         navigate("/", { replace: true });
         return;
       }
       
-      console.log("Submission loaded:", sub);
+      console.log("✅ Submission loaded:", sub);
       setSubmission(sub);
 
       // Load questions
       const questions = JSON.parse(localStorage.getItem(`exam_${examId}_questions`));
       
       if (!questions || questions.length === 0) {
-        console.error("No questions found for exam:", examId);
+        console.log("❌ No questions found for exam:", examId);
         navigate("/", { replace: true });
         return;
       }
@@ -58,10 +54,10 @@ export default function ExamResults() {
       setResults(calculatedResults);
       setLoading(false);
       
-      console.log("Results calculated:", calculatedResults);
+      console.log("✅ Results calculated:", calculatedResults);
     } catch (error) {
       console.error("Error loading results:", error);
-      // Don't show error - just redirect
+      // Don't show error - just redirect silently
       navigate("/", { replace: true });
     }
   };
