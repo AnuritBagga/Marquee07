@@ -188,49 +188,52 @@ export default function ExamInterface() {
   };
 
   const submitExam = async (autoSubmit = false, reason = "") => {
-    setIsSubmitting(true);
+    try {
+      setIsSubmitting(true);
 
-    const examId = examSession?.examId;
-    const timeTaken = Math.floor((Date.now() - startTimeRef.current) / 1000);
+      const examId = examSession?.examId;
+      const timeTaken = Math.floor((Date.now() - startTimeRef.current) / 1000);
 
-    const submission = {
-      examId,
-      studentName: examSession?.studentName,
-      studentEmail: examSession?.studentEmail,
-      answers,
-      timeTaken,
-      violations,
-      tabSwitches: tabSwitchCount,
-      autoSubmit,
-      autoSubmitReason: reason,
-      submittedAt: new Date().toISOString()
-    };
+      const submission = {
+        examId,
+        studentName: examSession?.studentName,
+        studentEmail: examSession?.studentEmail,
+        answers,
+        timeTaken,
+        violations,
+        tabSwitches: tabSwitchCount,
+        autoSubmit,
+        autoSubmitReason: reason,
+        submittedAt: new Date().toISOString()
+      };
 
-    // Save submission to localStorage
-    localStorage.setItem(`exam_${examId}_submission`, JSON.stringify(submission));
+      console.log("Submitting exam:", submission);
 
-    // Exit fullscreen
-    await exitFullscreen();
+      // Save submission to localStorage
+      localStorage.setItem(`exam_${examId}_submission`, JSON.stringify(submission));
+      console.log("Submission saved to localStorage");
 
-    // Check if offline
-    if (!navigator.onLine && examSession?.examData?.offline_mode_enabled) {
-      // Store for later sync
-      localStorage.setItem(`exam_${examId}_pendingSubmission`, JSON.stringify(submission));
-      navigate("/exam/offline-submit");
-    } else {
-      // Online - submit immediately
-      try {
-        // TODO: Replace with actual API call
-        // await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/student/exam/submit`, submission);
-        
-        // For now, just navigate to results
+      // Exit fullscreen
+      await exitFullscreen();
+
+      // Check if offline
+      if (!navigator.onLine && examSession?.examData?.offline_mode_enabled) {
+        console.log("Offline mode - storing for later sync");
+        // Store for later sync
+        localStorage.setItem(`exam_${examId}_pendingSubmission`, JSON.stringify(submission));
+        navigate("/exam/offline-submit");
+      } else {
+        console.log("Online mode - navigating to results");
+        // Online - navigate to results immediately
+        // In production, you would submit to backend first
         setTimeout(() => {
           navigate("/exam/results");
-        }, 1000);
-      } catch (error) {
-        console.error("Submission error:", error);
-        alert("Error submitting exam. Your answers are saved locally.");
+        }, 500);
       }
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("Error submitting exam: " + error.message);
+      setIsSubmitting(false);
     }
   };
 

@@ -16,29 +16,55 @@ export default function ExamResults() {
   }, []);
 
   const loadResults = () => {
-    // Load exam session
-    const session = JSON.parse(localStorage.getItem("examSession"));
-    if (!session) {
-      navigate("/exam/login");
-      return;
-    }
-    setExamSession(session);
+    try {
+      // Load exam session
+      const session = JSON.parse(localStorage.getItem("examSession"));
+      if (!session) {
+        console.error("No exam session found");
+        navigate("/exam/login");
+        return;
+      }
+      setExamSession(session);
 
-    // Load submission
-    const examId = session.examId;
-    const sub = JSON.parse(localStorage.getItem(`exam_${examId}_submission`));
-    if (!sub) {
-      alert("No submission found");
-      navigate("/exam/login");
-      return;
-    }
-    setSubmission(sub);
+      // Load submission
+      const examId = session.examId;
+      const sub = JSON.parse(localStorage.getItem(`exam_${examId}_submission`));
+      
+      if (!sub) {
+        console.error("No submission found for exam:", examId);
+        // Check all localStorage keys for debugging
+        const keys = Object.keys(localStorage);
+        console.log("Available localStorage keys:", keys.filter(k => k.includes("exam")));
+        
+        alert("No submission found. Please complete the exam first.");
+        navigate("/exam/demo");
+        return;
+      }
+      
+      console.log("Submission loaded:", sub);
+      setSubmission(sub);
 
-    // Calculate results (in production, this comes from backend)
-    const questions = JSON.parse(localStorage.getItem(`exam_${examId}_questions`));
-    const calculatedResults = calculateResults(questions, sub.answers, session.examData);
-    setResults(calculatedResults);
-    setLoading(false);
+      // Load questions
+      const questions = JSON.parse(localStorage.getItem(`exam_${examId}_questions`));
+      
+      if (!questions || questions.length === 0) {
+        console.error("No questions found for exam:", examId);
+        alert("Error loading exam questions");
+        navigate("/exam/demo");
+        return;
+      }
+
+      // Calculate results (in production, this comes from backend)
+      const calculatedResults = calculateResults(questions, sub.answers, session.examData);
+      setResults(calculatedResults);
+      setLoading(false);
+      
+      console.log("Results calculated:", calculatedResults);
+    } catch (error) {
+      console.error("Error loading results:", error);
+      alert("Error loading results: " + error.message);
+      navigate("/exam/demo");
+    }
   };
 
   const calculateResults = (questions, answers, examData) => {
