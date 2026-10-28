@@ -234,14 +234,18 @@ export default function ExamInterface() {
       await exitFullscreen();
 
       // Check if offline
-      if (!navigator.onLine && examSession?.examData?.offline_mode_enabled) {
+      const isReallyOffline = !navigator.onLine;
+      const isOfflineExam = examSession?.examData?.offline_mode_enabled;
+      const isDemoExam = examId.includes('demo') || examSession?.examData?.exam_type === 'mock';
+
+      if (isReallyOffline && isOfflineExam && !isDemoExam) {
         console.log("Offline mode - storing for later sync");
-        // Store for later sync
+        // Store for later sync (real exams only)
         localStorage.setItem(`exam_${examId}_pendingSubmission`, JSON.stringify(submission));
-        navigate("/exam/offline-submit");
+        navigate("/exam/offline-submit", { replace: true });
       } else {
-        console.log("Online mode - navigating to results");
-        // Online - navigate to results immediately
+        console.log("Navigating to results (demo or online)");
+        // Demo exams or online exams - go directly to results
         // Wait a bit to ensure localStorage is written
         setTimeout(() => {
           navigate("/exam/results", { replace: true });
