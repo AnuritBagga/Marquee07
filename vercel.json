@@ -4,9 +4,17 @@
     {
       "src": "api/index.py",
       "use": "@vercel/python"
+    },
+    {
+      "src": "api/student/exam/submit.py",
+      "use": "@vercel/python"
     }
   ],
   "routes": [
+    {
+      "src": "/api/student/exam/submit",
+      "dest": "/api/student/exam/submit.py"
+    },
     {
       "src": "/api/(.*)",
       "dest": "/api/index.py"

@@ -60,12 +60,15 @@ export default function OfflineSubmitHandler() {
 
       console.log("Submitting to server:", submission);
 
-      // Submit to backend API
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://marquee07.vercel.app/api';
+      // Use Vercel API route (same domain)
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+      const apiUrl = backendUrl ? `${backendUrl}/api/student/exam/submit` : '/api/student/exam/submit';
+      
+      console.log("API URL:", apiUrl);
       
       try {
         const response = await axios.post(
-          `${backendUrl}/student/exam/submit`,
+          apiUrl,
           submission,
           {
             headers: {
