@@ -58,52 +58,60 @@ export default function OfflineSubmitHandler() {
         return;
       }
 
-      console.log("Processing submission:", submission);
+      console.log("Submitting to server:", submission);
 
-      // For demo/mock exams, skip backend submission
-      // In production, you would submit to backend here
-      if (session.examData.exam_type === "mock" || examId.includes("demo")) {
-        console.log("Demo/mock exam - skipping backend submission");
-        
-        // Move pending submission to regular submission
-        localStorage.setItem(`exam_${examId}_submission`, JSON.stringify(submission));
-        localStorage.removeItem(`exam_${examId}_pendingSubmission`);
-        
-        // Navigate to results after short delay
-        setTimeout(() => {
-          navigate("/exam/results", { replace: true });
-        }, 500);
-        return;
-      }
-
-      // For real exams, submit to backend
+      // Submit to backend API
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://marquee07.vercel.app/api';
+      
       try {
         const response = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/api/student/exam/submit`,
-          submission
+          `${backendUrl}/student/exam/submit`,
+          submission,
+          {
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            timeout: 30000 // 30 second timeout
+          }
         );
 
-        if (response.data.success) {
-          // Clear pending submission
+        console.log("Server response:", response.data);
+
+        if (response.data && response.data.success) {
+          // Success! Clear pending and move to regular submission
+          localStorage.setItem(`exam_${examId}_submission`, JSON.stringify(submission));
           localStorage.removeItem(`exam_${examId}_pendingSubmission`);
           
           // Navigate to results
-          navigate("/exam/results", { replace: true });
+          setTimeout(() => {
+            navigate("/exam/results", { replace: true });
+          }, 500);
         } else {
-          throw new Error("Submission failed");
+          throw new Error(response.data?.message || "Submission failed");
         }
       } catch (apiError) {
-        console.error("Backend submission error:", apiError);
-        // For demo purposes, still allow proceeding to results
-        console.log("API failed, but saving submission locally for demo");
-        localStorage.setItem(`exam_${examId}_submission`, JSON.stringify(submission));
-        localStorage.removeItem(`exam_${examId}_pendingSubmission`);
-        navigate("/exam/results", { replace: true });
+        console.error("Backend API error:", apiError);
+        
+        // Check if it's a network error or server error
+        if (apiError.code === 'ECONNABORTED' || apiError.message.includes('timeout')) {
+          throw new Error("Request timed out. Please check your connection and try again.");
+        } else if (apiError.response) {
+          // Server responded with error
+          throw new Error(`Server error: ${apiError.response.status}. ${apiError.response.data?.message || ''}`);
+        } else if (apiError.request) {
+          // Request made but no response
+          throw new Error("No response from server. Please check if the backend is running.");
+        } else {
+          throw new Error(apiError.message || "Unknown error occurred");
+        }
       }
     } catch (error) {
       console.error("Submission error:", error);
       setSubmitting(false);
-      alert("Error processing submission. Your answers are saved. Click Submit Now to try again.");
+      
+      // Show detailed error message
+      const errorMsg = `Error submitting exam:\n${error.message}\n\nYour answers are saved locally. Please:\n1. Check your internet connection\n2. Make sure backend server is running\n3. Click "Submit Now" to try again`;
+      alert(errorMsg);
     }
   };
 
