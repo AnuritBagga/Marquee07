@@ -39,6 +39,7 @@ import ExamInterface from "@/components/assessment/StudentPortal/ExamInterface";
 import OfflineSubmitHandler from "@/components/assessment/StudentPortal/OfflineSubmitHandler";
 import ExamResults from "@/components/assessment/StudentPortal/ExamResults";
 import DemoExam from "@/components/assessment/StudentPortal/DemoExam";
+import ClearExamData from "@/components/assessment/ClearExamData";
 
 function App() {
   const [intro, setIntro] = useState(false);
@@ -100,6 +101,7 @@ function App() {
             <Route path="/exam/interface" element={<ExamInterface />} />
             <Route path="/exam/offline-submit" element={<OfflineSubmitHandler />} />
             <Route path="/exam/results" element={<ExamResults />} />
+            <Route path="/exam/clear-data" element={<ClearExamData />} />
           </Routes>
         </BrowserRouter>
       </div>

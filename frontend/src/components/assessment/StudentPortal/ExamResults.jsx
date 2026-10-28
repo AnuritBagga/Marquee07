@@ -21,7 +21,8 @@ export default function ExamResults() {
       const session = JSON.parse(localStorage.getItem("examSession"));
       if (!session) {
         console.error("No exam session found");
-        navigate("/exam/login");
+        // Don't show error - just redirect silently
+        navigate("/", { replace: true });
         return;
       }
       setExamSession(session);
@@ -32,12 +33,11 @@ export default function ExamResults() {
       
       if (!sub) {
         console.error("No submission found for exam:", examId);
-        // Check all localStorage keys for debugging
-        const keys = Object.keys(localStorage);
-        console.log("Available localStorage keys:", keys.filter(k => k.includes("exam")));
         
-        alert("No submission found. Please complete the exam first.");
-        navigate("/exam/demo");
+        // IMPORTANT: Don't show error alert - it's annoying!
+        // Instead, redirect back to start
+        console.log("Redirecting to home - no submission exists yet");
+        navigate("/", { replace: true });
         return;
       }
       
@@ -49,8 +49,7 @@ export default function ExamResults() {
       
       if (!questions || questions.length === 0) {
         console.error("No questions found for exam:", examId);
-        alert("Error loading exam questions");
-        navigate("/exam/demo");
+        navigate("/", { replace: true });
         return;
       }
 
@@ -62,8 +61,8 @@ export default function ExamResults() {
       console.log("Results calculated:", calculatedResults);
     } catch (error) {
       console.error("Error loading results:", error);
-      alert("Error loading results: " + error.message);
-      navigate("/exam/demo");
+      // Don't show error - just redirect
+      navigate("/", { replace: true });
     }
   };
 

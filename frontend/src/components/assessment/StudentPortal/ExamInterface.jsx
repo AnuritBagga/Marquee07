@@ -192,6 +192,13 @@ export default function ExamInterface() {
       setIsSubmitting(true);
 
       const examId = examSession?.examId;
+      if (!examId) {
+        console.error("No exam ID found!");
+        alert("Error: Exam session not found. Please restart the exam.");
+        setIsSubmitting(false);
+        return;
+      }
+
       const timeTaken = Math.floor((Date.now() - startTimeRef.current) / 1000);
 
       const submission = {
@@ -211,7 +218,17 @@ export default function ExamInterface() {
 
       // Save submission to localStorage
       localStorage.setItem(`exam_${examId}_submission`, JSON.stringify(submission));
-      console.log("Submission saved to localStorage");
+      console.log("✅ Submission saved to localStorage");
+      
+      // Verify it was saved
+      const verifySubmission = localStorage.getItem(`exam_${examId}_submission`);
+      if (!verifySubmission) {
+        console.error("❌ Submission failed to save!");
+        alert("Error saving submission. Please try again.");
+        setIsSubmitting(false);
+        return;
+      }
+      console.log("✅ Submission verified in localStorage");
 
       // Exit fullscreen
       await exitFullscreen();
@@ -225,10 +242,10 @@ export default function ExamInterface() {
       } else {
         console.log("Online mode - navigating to results");
         // Online - navigate to results immediately
-        // In production, you would submit to backend first
+        // Wait a bit to ensure localStorage is written
         setTimeout(() => {
-          navigate("/exam/results");
-        }, 500);
+          navigate("/exam/results", { replace: true });
+        }, 100);
       }
     } catch (error) {
       console.error("Submission error:", error);
